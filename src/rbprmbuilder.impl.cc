@@ -723,6 +723,7 @@ namespace hpp {
             rbprm::State state = rbprm::contact::ComputeContacts(fullBody(),config,
 							affMap, bindShooter_.affFilter_, dir);
             hpp::floatSeq* dofArray = new hpp::floatSeq();
+            lastStatesComputed_.push_back(state);
             dofArray->length(_CORBA_ULong(state.configuration_.rows()));
             for(std::size_t i=0; i< _CORBA_ULong(config.rows()); i++)
               (*dofArray)[(_CORBA_ULong)i] = state.configuration_ [i];
