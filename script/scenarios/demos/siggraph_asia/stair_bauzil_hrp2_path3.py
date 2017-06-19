@@ -47,7 +47,7 @@ from hpp.corbaserver.rbprm.problem_solver import ProblemSolver
 
 ps = ProblemSolver( rbprmBuilder )
 
-r = Viewer (ps)
+#r = Viewer (ps)
 
 
 q_init = rbprmBuilder.getCurrentConfig ();
@@ -105,7 +105,7 @@ rbprmBuilder2 = Robot ("toto")
 ps2 = ProblemSolver( rbprmBuilder2 )
 cl.problem.selectProblem("default")
 cl.problem.movePathToProblem(1,"rbprm_path",rbprmBuilder.getAllJointNames())
-r2 = Viewer (ps2)
+#r2 = Viewer (ps2)
 r.client.gui.setVisibility("toto", "OFF")
 r.client.gui.setVisibility("hrp2_trunk_flexible", "ON")
 #~ r2(q_far)

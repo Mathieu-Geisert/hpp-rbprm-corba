@@ -385,61 +385,68 @@ class FullBody (object):
           else:
                 filt = 0
           return self.client.rbprm.rbprm.interpolateConfigs(configs, robustnessTreshold, filt)
-          
+
      ##
-     # 
+     #
      # \param state1 current state considered
      # \param limb name of the limb for which the request aplies
      # \return whether the limb is in contact at this state
      def isLimbInContact(self, limbname, state1):
           return self.client.rbprm.rbprm.isLimbInContact(limbname, state1) >0
-          
+
      ##
-     # 
+     #
+     # \param limb name of the limb for which the request aplies
+     # \return whether the limb is in contact at the last state generated using generateContact
+     def isLastGenerateContactLimbInContact(self, limbname):
+          return self.client.rbprm.rbprm.isLastGenerateContactLimbInContact(limbname) >0
+
+     ##
+     #
      # \param state1 current state considered
      # \param limb name of the limb for which the request aplies
      # \return whether the limb is in contact at this state
      def isLimbInContactIntermediary(self, limbname, state1):
           return self.client.rbprm.rbprm.isLimbInContactIntermediary(limbname, state1) >0
-          
+
      ##
-     # 
+     #
      # \param state1 current state considered
      # \param limb name of the limb for which the request aplies
      # \return all limbs in contact at this state
      def getLimbsInContact(self, limbNames, state1):
           return [limbName for limbName in limbNames if self.isLimbInContact(limbname, state1)]
-          
+
      ##
-     # 
+     #
      # \param state1 current state considered
      # \param limb name of the limb for which the request aplies
      # \return all limbs in contact at this state
      def getLimbsInContactIntermediary(self, limbNames, state1):
           return [limbName for limbName in limbNames if self.isLimbInContactIntermediary(limbname, state1)]
-     
+
      ## returns the CWC of the robot at a given state
      #
      # \param stateId The considered state
      # \return H matrix and h column, such that H w <= h
      def getContactCone(self, stateId, friction = 0.5):
           H_h =  array(self.client.rbprm.rbprm.getContactCone(stateId, friction))
-          #~ print "H_h", H_h.shape 
+          #~ print "H_h", H_h.shape
           #~ print "norm h", ( H_h[:, -1] != 0).any()
-          # now decompose cone 
+          # now decompose cone
           return H_h[:,:-1], H_h[:, -1]
-          
+
      ## returns the CWC of the robot  between two states
      #
      # \param stateId The first considered state
      # \return H matrix and h column, such that H w <= h
      def getContactIntermediateCone(self, stateId, friction = 0.5):
           H_h =  array(self.client.rbprm.rbprm.getContactIntermediateCone(stateId, friction))
-          #~ print "H_h", H_h.shape 
+          #~ print "H_h", H_h.shape
           #~ print "norm h", ( H_h[:, -1] != 0).any()
-          # now decompose cone 
+          # now decompose cone
           return H_h[:,:-1], H_h[:, -1]
-          
+
      ## Create a path for the root given
      #  a set of 3d key points
      #  The path is composed of n+1 linear interpolations
@@ -669,7 +676,15 @@ class FullBody (object):
      # \param pathId Id of the path to compute from
      def isStateBalanced(self, stateId, robustness = 0):
           return self.client.rbprm.rbprm.isStateBalanced(stateId) > robustness
-                          
+
+     ## Given start and goal states
+     #  generate a contact sequence over a list of configurations
+     #
+     # \param stepSize discretization step
+     # \param pathId Id of the path to compute from
+     def isLastGenerateContactBalanced(self, robustness = 0):
+          return self.client.rbprm.rbprm.isLastGenerateContactBalanced() > robustness
+
      ## Updates limb databases with a user chosen computation
      #
      # \param analysis name of computation

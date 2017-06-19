@@ -517,6 +517,10 @@ module hpp
     /// \param state1 current state considered
     /// \return whether the limb is in contact at this state
     short isLimbInContact(in string limbname, in double state1) raises (Error);
+    
+    /// \param limb name of the limb for which the request aplies
+    /// \return whether the limb is in contact for the last state found using generateContact function
+    short isLastGenerateContactLimbInContact(in string limbname) raises (Error);
 
     /// Is limb in contact during the motion from the current state to the next one
     /// \param limb name of the limb for which the request aplies
@@ -562,6 +566,9 @@ module hpp
     /// returns whether a state is in static equilibrium
     /// \param state id of the state
     double isStateBalanced(in unsigned short state) raises (Error);
+    
+    /// returns whether the last state generated using generateContact is in static equilibrium
+    double isLastGenerateContactBalanced() raises (Error);
 
     /// returns octree transform for a given robot configuration
     /// \param config configuration tested on the robot

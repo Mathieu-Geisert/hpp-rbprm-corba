@@ -723,7 +723,8 @@ namespace hpp {
             rbprm::State state = rbprm::contact::ComputeContacts(fullBody(),config,
 							affMap, bindShooter_.affFilter_, dir);
             hpp::floatSeq* dofArray = new hpp::floatSeq();
-            lastStatesComputed_.push_back(state);
+            //lastStatesComputed_.push_back(state);
+            lastStateGenerateContact_ = state;
             dofArray->length(_CORBA_ULong(state.configuration_.rows()));
             for(std::size_t i=0; i< _CORBA_ULong(config.rows()); i++)
               (*dofArray)[(_CORBA_ULong)i] = state.configuration_ [i];
@@ -2278,6 +2279,21 @@ assert(s2 == s1 +1);
         }
     }
 
+    CORBA::Short RbprmBuilder::isLastGenerateContactLimbInContact(const char* limbName) throw (hpp::Error)
+    {
+        try
+        {
+            const std::map<std::string, fcl::Vec3f> & contacts = lastStateGenerateContact_.contactPositions_;
+            if(contacts.find(std::string(limbName))!= contacts.end())
+                return 1;
+            return 0;
+        }
+        catch(std::runtime_error& e)
+        {
+            throw Error(e.what());
+        }
+    }
+
     CORBA::Short RbprmBuilder::isLimbInContactIntermediary(const char* limbName, double state1) throw (hpp::Error)
     {
         try
@@ -2439,6 +2455,19 @@ assert(s2 == s1 +1);
         }
     }
 
+
+    double RbprmBuilder::isLastGenerateContactBalanced() throw (hpp::Error)
+    {
+        try
+        {
+            return stability::IsStable(fullBody(),lastStateGenerateContact_);
+        }
+        catch(std::runtime_error& e)
+        {
+            std::cout << "ERROR " << e.what() << std::endl;
+            throw Error(e.what());
+        }
+    }
 
     void RbprmBuilder::runSampleAnalysis(const char* analysis, double isstatic) throw (hpp::Error)
     {
