@@ -27,23 +27,23 @@ class CorbaClient:
      """
      Container for corba clients to various interfaces.
      """
-     def __init__ (self):
-          self.basic = BasicClient ()
-          self.rbprm = RbprmClient ()
+     def __init__ (self, postContextId=""):
+          self.basic = BasicClient (postContextId=postContextId)
+          self.rbprm = RbprmClient (postContextId=postContextId)
 
 ## Load and handle a RbprmFullbody robot for rbprm planning
 #
-#  A RbprmDevice robot is a set of two robots. One for the 
+#  A RbprmDevice robot is a set of two robots. One for the
 #  trunk of the robot, one for the range of motion
 class FullBody (object):
      ## Constructor
-     def __init__ (self, load = True):
+     def __init__ (self, load = True, postContextId=""):
           self.tf_root = "base_link"
           self.rootJointType = dict()
-          self.client = CorbaClient ()
+          self.client = CorbaClient (postContextId=postContextId)
           self.load = load
           self.limbNames = []
-     
+
      ## Virtual function to load the fullBody robot model.
      #
      # \param urdfName urdf description of the fullBody robot
@@ -76,7 +76,7 @@ class FullBody (object):
                 rankInConfiguration += self.client.basic.robot.getJointConfigSize (j)
                 self.rankInVelocity [j] = rankInVelocity
                 rankInVelocity += self.client.basic.robot.getJointNumberDof (j)
-     
+
      # Virtual function to load the fullBody robot model.
      #
      def loadFullBodyModelFromActiveRobot (self, urdfName, rootJointType, meshPackageName, packageName, urdfSuffix, srdfSuffix):
@@ -142,8 +142,8 @@ class FullBody (object):
                 boolValEff = 1.
           if(grasp):
                 graspv = 1.
-          self.client.rbprm.rbprm.addLimbDatabase(databasepath, limbId, heuristicName, boolVal,boolValEff,graspv)     
-          self.limbNames += [limbId]     
+          self.client.rbprm.rbprm.addLimbDatabase(databasepath, limbId, heuristicName, boolVal,boolValEff,graspv)
+          self.limbNames += [limbId]
 
      ## Add a limb to the model
      #
@@ -180,7 +180,7 @@ class FullBody (object):
      # \param idsample identifiant of the sample considered
      def getSample(self, name, idsample):
           return self.client.rbprm.rbprm.getSampleConfig(name,idsample)
-          
+
      ## Returns the end effector position of en effector,
      # given the current root configuration of the robot and a limb sample
      #
@@ -188,7 +188,7 @@ class FullBody (object):
      # \param idsample identifiant of the sample considered
      def getSamplePosition(self, name, idsample):
           return self.client.rbprm.rbprm.getSamplePosition(name,idsample)
-          
+
      ## Get the end effector position for a given configuration, assuming z normal
      # \param limbName name of the limb from which to retrieve a sample
      # \param configuration configuration of the robot
@@ -196,14 +196,14 @@ class FullBody (object):
      # array of size 4, where each entry is the position of a corner of the contact surface
      def getEffectorPosition(self, limbName, configuration):
           return self.client.rbprm.rbprm.getEffectorPosition(limbName,configuration)
-          
+
      ##compute the distance between all effectors replaced between two states
      # does not account for contact not present in both states
      # \param state1 from state
      # \param state2 destination state
      # \return the value computed for the given sample and analytics
      def getEffectorDistance(self, state1, state2):
-          return self.client.rbprm.rbprm.getEffectorDistance(state1,state2)          
+          return self.client.rbprm.rbprm.getEffectorDistance(state1,state2)
 
      ## Generates a balanced contact configuration, considering the
      #  given current configuration of the robot, and a direction of motion.
@@ -213,20 +213,20 @@ class FullBody (object):
      # \param direction a 3d vector specifying the desired direction of motion
      def generateContacts(self, configuration, direction):
           return self.client.rbprm.rbprm.generateContacts(configuration, direction)
-          
+
      ## Generate an autocollision free configuration with limbs in contact with the ground
      # \param contactLimbs name of the limbs to project in contact
      # \return a sampled contact configuration
      def generateGroundContact(self, contactLimbs):
           return self.client.rbprm.rbprm.generateGroundContact(contactLimbs)
-          
+
      ## Create a state and push it to the state array
      # \param q configuration
      # \param names list of effectors in contact
      # \return stateId
      def createState(self, q, contactLimbs):
           return self.client.rbprm.rbprm.createState(q, contactLimbs)
-          
+
      ## Retrieves the contact candidates configurations given a configuration and a limb
      #
      # \param name id of the limb considered
@@ -234,7 +234,7 @@ class FullBody (object):
      # \param direction a 3d vector specifying the desired direction of motion
      def getContactSamplesIds(self, name, configuration, direction):
           return self.client.rbprm.rbprm.getContactSamplesIds(name, configuration, direction)
-          
+
      ## Retrieves the contact candidates configurations given a configuration and a limb
      #
      # \param name id of the limb considered
@@ -242,7 +242,7 @@ class FullBody (object):
      # \param direction a 3d vector specifying the desired direction of motion
      def getContactSamplesProjected(self, name, configuration, direction, numSamples = 10):
           return self.client.rbprm.rbprm.getContactSamplesProjected(name, configuration, direction, numSamples)
-          
+
      ## Retrieves the samples IDs In a given octree cell
      #
      # \param name id of the limb considered
@@ -250,19 +250,19 @@ class FullBody (object):
      # \param direction a 3d vector specifying the desired direction of motion
      def getSamplesIdsInOctreeNode(self, limbName, octreeNodeId):
           return self.client.rbprm.rbprm.getSamplesIdsInOctreeNode(limbName, octreeNodeId)
-          
+
      ## Get the number of samples generated for a limb
      #
      # \param limbName name of the limb from which to retrieve a sample
      def getNumSamples(self, limbName):
           return self.client.rbprm.rbprm.getNumSamples(limbName)
-          
+
      ## Get the number of octreeNodes
      #
      # \param limbName name of the limb from which to retrieve a sample
      def getOctreeNodeIds(self, limbName):
           return self.client.rbprm.rbprm.getOctreeNodeIds(limbName)
-          
+
      ## Get the sample value for a given analysis
      #
      # \param limbName name of the limb from which to retrieve a sample
@@ -270,15 +270,15 @@ class FullBody (object):
      # \param sampleId id of the considered sample
      def getSampleValue(self, limbName, valueName, sampleId):
           return self.client.rbprm.rbprm.getSampleValue(limbName, valueName, sampleId)
-          
-     ## Initialize the first configuration of the path discretization 
+
+     ## Initialize the first configuration of the path discretization
      # with a balanced configuration for the interpolation problem;
      #
      # \param configuration the desired start configuration
      # \param contacts the array of limbs in contact
      def setStartState(self, configuration, contacts):
           return self.client.rbprm.rbprm.setStartState(configuration, contacts)
-          
+
      ## Create a state given a configuration and contacts
      #
      # \param configuration the desired start configuration
@@ -286,28 +286,28 @@ class FullBody (object):
      # \return id of created state
      def createState(self, configuration, contacts):
           return self.client.rbprm.rbprm.createState(configuration, contacts)
-                
-     ## Initialize the last configuration of the path discretization 
+
+     ## Initialize the last configuration of the path discretization
      # with a balanced configuration for the interpolation problem;
      #
      # \param configuration the desired end configuration
-     # \param contacts the array of limbs in contact          
+     # \param contacts the array of limbs in contact
      def setEndState(self, configuration, contacts):
           return self.client.rbprm.rbprm.setEndState(configuration, contacts)
-     
+
      ## Saves a computed contact sequence in a given filename
      #
      # \param The file where the configuration must be saved
      def saveComputedStates(self, filename):
           return self.client.rbprm.rbprm.saveComputedStates(filename)
-     
+
      ## Saves a limb database
      #
      # \param limb name of the limb for which the DB must be saved
      # \param The file where the configuration must be saved
      def saveLimbDatabase(self, limbName, filename):
           return self.client.rbprm.rbprm.saveLimbDatabase(limbName, filename)
-     
+
      ## Discretizes a path return by a motion planner into a discrete
      # sequence of balanced, contact configurations and returns
      # the sequence as an array of configurations
@@ -322,7 +322,7 @@ class FullBody (object):
           else:
                 filt = 0
           return self.client.rbprm.rbprm.interpolate(stepsize, pathId, robustnessTreshold, filt)
-     
+
      ## Provided a discrete contact sequence has already been computed, computes
      # all the contact positions and normals for a given state, the next one, and the intermediate between them.
      #
@@ -331,7 +331,7 @@ class FullBody (object):
      def computeContactPoints(self, stateId):
           rawdata = self.client.rbprm.rbprm.computeContactPoints(stateId)
           return [[b[i:i+3] for i in range(0, len(b), 6)] for b in rawdata], [[b[i+3:i+6] for i in range(0, len(b), 6)] for b in rawdata]
-     
+
      ## Provided a discrete contact sequence has already been computed, computes
      # all the contact positions and normals for a given state, the next one, and the intermediate between them.
      #
@@ -340,7 +340,7 @@ class FullBody (object):
      def computeContactPointsForLimb(self, stateId, limb):
           rawdata = self.client.rbprm.rbprm.computeContactPointsForLimb(stateId, limb)
           return [[b[i:i+3] for i in range(0, len(b), 6)] for b in rawdata], [[b[i+3:i+6] for i in range(0, len(b), 6)] for b in rawdata]
-     
+
      ## Compute effector contact points and normals for a given configuration
      # in local coordinates
      #
@@ -371,7 +371,7 @@ class FullBody (object):
                           Ps[i][targetName] = P[i]
                           Ns[i][targetName] = N[i]
           return Ps, Ns
-          
+
      ## Given start and goal states
      #  generate a contact sequence over a list of configurations
      #
@@ -459,7 +459,7 @@ class FullBody (object):
      #  \param quat_2 quaternion of 2nd rotation
      def generateRootPath(self, positions, quat_1, quat_2):
           return self.client.rbprm.rbprm.generateRootPath(positions, quat_1, quat_2)
-     
+
      ## Create a com trajectory given list of positions, velocities and accelerations
      # accelerations list contains one less element because it does not have an initial state.
      # a set of 3d key points
@@ -471,7 +471,7 @@ class FullBody (object):
      # \return id of the root path computed
      def straightPath(self, positions):
           return self.client.rbprm.rbprm.straightPath(positions)
-          
+
      ## Create a com trajectory given a polynomial trajectory.
      # The path is composed of n+1 integrations
      # between the n waypoints.
@@ -481,7 +481,7 @@ class FullBody (object):
      # \return id of the root path computed
      def generateCurveTraj(self, positions):
           return self.client.rbprm.rbprm.generateCurveTraj(positions)
-          
+
      ## Create a com trajectory given a polynomial trajectory.
      # The path is composed of n+1 integrations
      # between the n waypoints. Then splits the curve into several sub curves
@@ -492,7 +492,7 @@ class FullBody (object):
      # \return id of the complete path computed
      def generateCurveTrajParts(self, positions, partition):
           return self.client.rbprm.rbprm.generateCurveTrajParts(positions, partition)
-                
+
      ## Create a com trajectory given list of positions, velocities and accelerations
      # accelerations list contains one less element because it does not have an initial state.
      # a set of 3d key points
@@ -507,7 +507,7 @@ class FullBody (object):
      # \return id of the root path computed
      def generateComTraj(self, positions, velocities, accelerations, dt):
           return self.client.rbprm.rbprm.generateComTraj(positions, velocities, accelerations, dt)
-          
+
      ## Create a path for the root given
      #  a set of 3d key points
      #  The path is composed of n+1 linear interpolations
@@ -522,7 +522,7 @@ class FullBody (object):
      #  \return id of the resulting path
      def generateRootPathStates(self, positions, configState1, configState2):
           return self.client.rbprm.rbprm.generateRootPath(positions, configState1[3:7], configState2[3:7])
-          
+
      ## Given start and goal states
      #  Provided a path has already been computed and interpolated, generate a continuous path
      #  between two indicated states. Will fail if the index of the states do not exist
@@ -533,37 +533,37 @@ class FullBody (object):
      #  \return id of the resulting path
      def limbRRT(self, state1, state2, numOptim = 10):
           return self.client.rbprm.rbprm.limbRRT(state1, state2, numOptim)
-          
-     ## Provided a path has already been computed and interpolated, generate a continuous path                                
-     # between two indicated states. The states do not need to be consecutive, but increasing in Id.                      
-     # Will fail if the index of the states do not exist                                                                                 
-     # The path of the root and limbs not considered by the contact transitions between                                        
+
+     ## Provided a path has already been computed and interpolated, generate a continuous path
+     # between two indicated states. The states do not need to be consecutive, but increasing in Id.
+     # Will fail if the index of the states do not exist
+     # The path of the root and limbs not considered by the contact transitions between
      # two states is assumed to be already computed, and registered in the solver under the id specified by the user.
-     # It must be valid in the sense of the active PathValidation.                                                                    
-     # \param state1 index of first state.                                                                                                    
-     # \param state2 index of second state.                                                                                                  
-     # \param path index of the path considered for the generation                                                                    
-     # \param numOptimizations Number of iterations of the shortcut algorithm to apply between each states 
+     # It must be valid in the sense of the active PathValidation.
+     # \param state1 index of first state.
+     # \param state2 index of second state.
+     # \param path index of the path considered for the generation
+     # \param numOptimizations Number of iterations of the shortcut algorithm to apply between each states
      #  \return id of the resulting path
      def limbRRTFromRootPath(self, state1, state2, path, numOptim = 10):
-          return self.client.rbprm.rbprm.limbRRTFromRootPath(state1, state2, path, numOptim)          
-          
-          
-     ## Provided a center of mass trajectory has already been computed and interpolated, generate a continuous full body path                                
-     # between two indicated states. The states do not need to be consecutive, but increasing in Id.                      
-     # Will fail if the index of the states do not exist                                                                                 
-     # The path of the COM  between                                        
+          return self.client.rbprm.rbprm.limbRRTFromRootPath(state1, state2, path, numOptim)
+
+
+     ## Provided a center of mass trajectory has already been computed and interpolated, generate a continuous full body path
+     # between two indicated states. The states do not need to be consecutive, but increasing in Id.
+     # Will fail if the index of the states do not exist
+     # The path of the COM  between
      # two states is assumed to be already computed, and registered in the solver under the id specified by the user.
-     # It must be valid in the sense of the active PathValidation.                                                                    
-     # \param state1 index of first state.                                                                                                    
-     # \param state2 index of second state.                                                                                                  
-     # \param path index of the com path considered for the generation                                                                    
-     # \param numOptimizations Number of iterations of the shortcut algorithm to apply between each states 
+     # It must be valid in the sense of the active PathValidation.
+     # \param state1 index of first state.
+     # \param state2 index of second state.
+     # \param path index of the com path considered for the generation
+     # \param numOptimizations Number of iterations of the shortcut algorithm to apply between each states
      #  \return id of the resulting path
      def comRRT(self, state1, state2, path, numOptim = 10):
-          return self.client.rbprm.rbprm.comRRT(state1, state2, path, numOptim)          
-          
-                
+          return self.client.rbprm.rbprm.comRRT(state1, state2, path, numOptim)
+
+
      ## Provided a path has already been computed and interpolated, generate a continuous path
      # between two indicated states. The states do not need to be consecutive, but increasing in Id.
      # Will fail if the index of the states do not exist
@@ -578,7 +578,7 @@ class FullBody (object):
      # \return id of the root path computed
      def comRRTFromPos(self, state1, comPos1, comPos2, comPos3, numOptim = 10):
           return self.client.rbprm.rbprm.comRRTFromPos(state1, comPos1, comPos2, comPos3, numOptim)
-          
+
      ## Provided a path has already been computed and interpolated, generate a continuous path
      # between two indicated states. The states do not need to be consecutive, but increasing in Id.
      # Will fail if the index of the states do not exist
@@ -593,8 +593,8 @@ class FullBody (object):
      # \return id of the root path computed
      def comRRTFromPosBetweenState(self, state1, state2, comPos1, comPos2, comPos3, numOptim = 10):
           return self.client.rbprm.rbprm.comRRTFromPosBetweenState(state1, state2, comPos1, comPos2, comPos3, numOptim)
-          
-                
+
+
      ## Provided a path has already been computed and interpolated, generate a continuous path
      # between two indicated states. The states do not need to be consecutive, but increasing in Id.
      # Will fail if the index of the states do not exist
@@ -609,8 +609,8 @@ class FullBody (object):
      # \return id of the root path computed
      def effectorRRT(self, state1, comPos1, comPos2, comPos3, numOptim = 10):
           return self.client.rbprm.rbprm.effectorRRT(state1, comPos1, comPos2, comPos3, numOptim)
-          
-                          
+
+
      ## Provided a path has already been computed and interpolated, generate a continuous path
      # between two indicated states. The states do not need to be consecutive, but increasing in Id.
      # Will fail if the index of the states do not exist
@@ -625,7 +625,7 @@ class FullBody (object):
      # \return id of the root path computed
      def effectorRRTFromPath(self, state1, refPathId, path_start, path_to, comPos1, comPos2, comPos3, numOptim = 10, trackedEffectors = []):
           return self.client.rbprm.rbprm.effectorRRTFromPath(state1, refPathId, path_start, path_to, comPos1, comPos2, comPos3, numOptim, trackedEffectors)
-          
+
      ## Project a given state into a given COM position
      # between two indicated states. The states do not need to be consecutive, but increasing in Id.
      # Will fail if the index of the state does not exist.
@@ -633,15 +633,15 @@ class FullBody (object):
      # \param targetCom 3D vector for the com position
      # \return projected configuration
      def projectToCom(self, state, targetCom, maxNumSample = 0):
-          return self.client.rbprm.rbprm.projectToCom(state, targetCom, maxNumSample)     
-          
+          return self.client.rbprm.rbprm.projectToCom(state, targetCom, maxNumSample)
+
      ## Returns the configuration at a given state
      # Will fail if the index of the state does not exist.
      # \param state index of state.
      # \return state configuration
      def getConfigAtState(self, state):
-          return self.client.rbprm.rbprm.getConfigAtState(state)          
-          
+          return self.client.rbprm.rbprm.getConfigAtState(state)
+
      ## Project a given state into a given COM position
      # and update the state configuration.
      # \param state index of first state.
@@ -649,7 +649,7 @@ class FullBody (object):
      # \return whether the projection was successful
      def projectStateToCOM(self, state, targetCom, maxNumSample = 0):
           return self.client.rbprm.rbprm.projectStateToCOM(state, targetCom, maxNumSample)     > 0
-          
+
      ## Project a given state into a given COM position
      # and update the state configuration.
      # \param state index of first state.
@@ -657,7 +657,7 @@ class FullBody (object):
      # \return whether the projection was successful
      def setConfigAtState(self, state, targetCom):
           return self.client.rbprm.rbprm.setConfigAtState(state, targetCom)     > 0
-          
+
      ## Given start and goal states
      #  generate a contact sequence over a list of configurations
      #
@@ -668,7 +668,7 @@ class FullBody (object):
                 return True
           else:
                 return False
-          
+
      ## Given start and goal states
      #  generate a contact sequence over a list of configurations
      #
@@ -694,7 +694,7 @@ class FullBody (object):
           if(isstatic):
                 isStatic = 1.
           self.client.rbprm.rbprm.runSampleAnalysis(analysis,isStatic)
-          
+
      ## Updates a limb database with a user chosen computation
      #
      # \param limbname name of the limb chosen for computation
@@ -705,7 +705,7 @@ class FullBody (object):
           if(isstatic):
                 isStatic = 1.
           return self.client.rbprm.rbprm.runLimbSampleAnalysis(limbname, analysis,isStatic)
-          
+
      ## if the preprocessor variable PROFILE is active
      # dump the profiling data into a logFile
      # \param logFile name of the file where to dump the profiling data
@@ -733,14 +733,14 @@ class FullBody (object):
           self.octrees[limbName] = scene
           gui.addSceneToWindow(scene,winId)
           gui.refresh()
-          
+
      ## Create octree nodes representation for a given limb
      #
      # \param limbName name of the limb considered
      # \param ocId of the octree box
      def getOctreeBox(self, limbName, ocId):
           return self.client.rbprm.rbprm.getOctreeBox(limbName, ocId)
-     
+
      ## Draws robot configuration, along with octrees associated
      #
      # \param viewer gepetto viewer instance
@@ -750,8 +750,8 @@ class FullBody (object):
                 transform = self.client.rbprm.rbprm.getOctreeTransform(limb, configuration)
                 viewer.client.gui.applyConfiguration(groupid,transform)
           viewer.client.gui.refresh()
-          
-          
+
+
     ## Computes the closest projection matrix that will bring a limb's effector
     # from its current configuration to a specified location
     # \param limbName name of the considered limb
@@ -759,7 +759,7 @@ class FullBody (object):
     # \param p target position
     # \param n target normal
     # \return 7D Transform of effector in contact (position + quaternion)
-     def computeTargetTransform(self, limbName, configuration, p, n):         
+     def computeTargetTransform(self, limbName, configuration, p, n):
           return self.client.rbprm.rbprm.computeTargetTransform(limbName, configuration, p, n)
 
      ## Export motion to a format readable by the blender
@@ -769,7 +769,7 @@ class FullBody (object):
      # \param filename outputfile where to export the motion
      def exportMotion(self, viewer, configurations, filename):
           em.exportStates(viewer, self.client.basic.robot, configurations, filename)
-          
+
      ## Export motion to a format readable by the blender
      # importFromGepetto script
      # \param viewer gepetto viewer instance
