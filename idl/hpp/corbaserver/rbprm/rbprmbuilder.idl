@@ -608,6 +608,8 @@ module hpp
     /// \return (success,NState) whether the creation was successful, as well as the new state
     short addNewContact(in unsigned short stateId, in string limbName, in floatSeq position, in floatSeq normal, in unsigned short max_num_sample) raises (Error);
 
+    short moveContactofLastGeneratedContact(in string limbName, in floatSeq position, in floatSeq normal, in unsigned short max_num_sample) raises (Error);
+
     /// removes a contact from the state
     /// if the limb is not already in contact, does nothing
     /// \param state State considered

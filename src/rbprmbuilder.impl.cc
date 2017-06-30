@@ -2604,6 +2604,54 @@ assert(s2 == s1 +1);
         }
     }
 
+    CORBA::Short RbprmBuilder::moveContactofLastGeneratedContact(const char* limbName,
+                                        const hpp::floatSeq& position, const hpp::floatSeq& normal, unsigned short max_num_sample) throw (hpp::Error)
+    {
+        try
+        {
+            State ns = lastStateGenerateContact_;
+            const std::string limb(limbName);
+            model::Configuration_t config = dofArrayToConfig (std::size_t(3), position);
+            fcl::Vec3f p; for(int i =0; i<3; ++i) p[i] = config[i];
+            config = dofArrayToConfig (std::size_t(3), normal);
+            fcl::Vec3f n; for(int i =0; i<3; ++i) n[i] = config[i];
+
+//            core::ConfigProjectorPtr_t proj = core::ConfigProjector::create(fullBody()->device_,"proj", 1e-4, 20);
+//            // get current normal orientation
+//            hpp::tools::LockJointRec(limbName, fullBody()->device_->rootJoint(), proj);
+//            projection::ProjectionReport rep =  projectToObstacle(proj, fullBody(), limb, ullBody()->GetLimbs().at(limb), validation, fullBody()., ns, n, p);
+
+            projection::ProjectionReport rep = projection::projectLimbToObstacle(fullBody(),limb, fullBody()->GetLimbs().at(limb), ns, n,p);
+            ValidationReportPtr_t rport (ValidationReportPtr_t(new CollisionValidationReport));
+            CollisionValidationPtr_t val = fullBody()->GetCollisionValidation();
+            rep.success_ =  rep.success_ &&  val->validate(rep.result_.configuration_,rport);
+            if (!rep.success_ && max_num_sample > 0)
+            {
+                BasicConfigurationShooterPtr_t shooter = BasicConfigurationShooter::create(fullBody()->device_);
+                Configuration_t head = ns.configuration_.head<7>();
+                for(std::size_t i =0; !rep.success_ && i< max_num_sample; ++i)
+                {
+                    ns.configuration_ = *shooter->shoot();
+                    ns.configuration_.head<7>() = head;
+                    rep = projection::projectLimbToObstacle(fullBody(),limb, fullBody()->GetLimbs().at(limb), ns, n,p);
+                    rep.success_ = rep.success_ && val->validate(rep.result_.configuration_,rport);
+                }
+            }
+            if(rep.success_)
+            {
+                lastStateGenerateContact_ = rep.result_;
+                return 1;
+            }
+            else
+                return -1;
+        }
+        catch(std::runtime_error& e)
+        {
+            std::cout << "ERROR " << e.what() << std::endl;
+            throw Error(e.what());
+        }
+    }
+
     CORBA::Short RbprmBuilder::removeContact(unsigned short stateId, const char* limbName) throw (hpp::Error)
     {
         try
