@@ -22,30 +22,30 @@
 
 module hpp
 {
-  module corbaserver {
-  module rbprm {
-  interface RbprmBuilder
-  {
-    /// Create a Device for the ROM of the robot
-    /// This function can be called several times to include several ROMs (one for each limb)
-    /// The device automatically has an anchor joint called "base_joint" as
-    /// root joint.
-    /// \param romRobotName the name of the robot range of motion.
-    ///  Load robot model
-    /// \param rootJointType type of root joint among "anchor", "freeflyer",
-    /// "planar",
-    /// \param packageName Name of the ROS package containing the model,
-    /// \param modelName Name of the package containing the model
-    /// \param urdfSuffix suffix for urdf file,
-    ///
-    /// The ros url are built as follows:
-    /// "package://${packageName}/urdf/${modelName}${urdfSuffix}.urdf"
-    /// "package://${packageName}/srdf/${modelName}${srdfSuffix}.srdf"
-    ///
-    void loadRobotRomModel (in string romRobotName, in string rootJointType,
-             in string packageName, in string modelName,
-             in string urdfSuffix, in string srdfSuffix)
-      raises (Error);
+module corbaserver {
+module rbprm {
+interface RbprmBuilder
+{
+/// Create a Device for the ROM of the robot
+/// This function can be called several times to include several ROMs (one for each limb)
+/// The device automatically has an anchor joint called "base_joint" as
+/// root joint.
+/// \param romRobotName the name of the robot range of motion.
+///  Load robot model
+/// \param rootJointType type of root joint among "anchor", "freeflyer",
+/// "planar",
+/// \param packageName Name of the ROS package containing the model,
+/// \param modelName Name of the package containing the model
+/// \param urdfSuffix suffix for urdf file,
+///
+/// The ros url are built as follows:
+/// "package://${packageName}/urdf/${modelName}${urdfSuffix}.urdf"
+/// "package://${packageName}/srdf/${modelName}${srdfSuffix}.srdf"
+///
+void loadRobotRomModel (in string romRobotName, in string rootJointType,
+in string packageName, in string modelName,
+in string urdfSuffix, in string srdfSuffix)
+raises (Error);
 
 
     /// Create a RbprmDevice for the root of the robot
@@ -64,9 +64,9 @@ module hpp
     /// "package://${packageName}/srdf/${modelName}${srdfSuffix}.srdf"
     ///
     void loadRobotCompleteModel (in string trunkRobotName, in string rootJointType,
-             in string packageName, in string modelName,
-             in string urdfSuffix, in string srdfSuffix)
-      raises (Error);
+    in string packageName, in string modelName,
+    in string urdfSuffix, in string srdfSuffix)
+    raises (Error);
 
     /// Create a RbprmFullBody object
     /// The device automatically has an anchor joint called "base_joint" as
@@ -83,15 +83,15 @@ module hpp
     /// "package://${packageName}/srdf/${modelName}${srdfSuffix}.srdf"
     ///
     void loadFullBodyRobot (in string trunkRobotName, in string rootJointType,
-             in string packageName, in string modelName,
-             in string urdfSuffix, in string srdfSuffix, in string selectedProblem)
-      raises (Error);
+    in string packageName, in string modelName,
+    in string urdfSuffix, in string srdfSuffix, in string selectedProblem)
+    raises (Error);
 
 		/// Create a RbprmFullBody object
-		/// The device automatically has an anchor joint called "base_joint" as
-		/// root joint.
-		void loadFullBodyRobotFromExistingRobot ()
-			raises (Error);
+                /// The device automatically has an anchor joint called "base_joint" as
+                /// root joint.
+                void loadFullBodyRobotFromExistingRobot ()
+                raises (Error);
 
     void selectFullBody (in string name) raises (Error);
 
@@ -102,20 +102,20 @@ module hpp
     /// is colliding with the environment.
     ///
     void setFilter (in Names_t roms)
-      raises (Error);
+    raises (Error);
 
     /// Called if several problem solvers are used
     /// is colliding with the environment.
     ///
     void initNewProblemSolver ()
-      raises (Error);
+    raises (Error);
 
     /// Set Rom surface constraints for the configuration shooter
     /// a Rom configuration will only be valid it collides with a surface
     /// that forms a given affordance (support, lean, etc.)
-    /// \param affordances a list of affordances accepted for 
-		/// validation of given Rom
-		///
+    /// \param affordances a list of affordances accepted for
+    /// validation of given Rom
+    ///
     void setAffordanceFilter(in string romName, in Names_t affordances) raises (Error);
 
     /// Sets limits on robot orientation, described according to Euler's ZYX rotation order
@@ -126,9 +126,9 @@ module hpp
     void boundSO3(in floatSeq limitszyx) raises (Error);
 
 		/// Project a state into a COM
-		///
-		/// \param stateId target state
-		/// \param com target com
+                ///
+                /// \param stateId target state
+                /// \param com target com
                 double projectStateToCOM(in unsigned short stateId,  in floatSeq com, in  unsigned short max_num_sample) raises (Error);
 
                 /// Project a state into a COM
@@ -138,11 +138,11 @@ module hpp
                 double setConfigAtState(in unsigned short stateId,  in floatSeq config) raises (Error);
 
 		/// Create a state and push it to the state array
-		///
-		/// \param q configuration
-		/// \param names list of effectors in contact
-		/// \return stateId
-		short createState(in floatSeq configuration, in Names_t contactLimbs) raises (Error);
+                ///
+                /// \param q configuration
+                /// \param names list of effectors in contact
+                /// \return stateId
+                short createState(in floatSeq configuration, in Names_t contactLimbs) raises (Error);
 
     /// Get Sample configuration by its id
     /// \param sampleName name of the limb from which to retrieve a sample
@@ -239,9 +239,9 @@ module hpp
     /// \param contactType whether the contact is punctual ("_3_DOF") or surfacic ("_6_DOF")
     /// \param disableEffectorCollision whether collision detection should be disabled for the end effector bones
     void addLimb(in string id, in string limb, in string effector, in floatSeq offset, in floatSeq normal,
-                 in double x, in double y, in unsigned long long samples, in string heuristicName,
-                 in double resolution, in string contactType,  in double disableEffectorCollision,
-                 in double grasp) raises (Error);
+    in double x, in double y, in unsigned long long samples, in string heuristicName,
+    in double resolution, in string contactType,  in double disableEffectorCollision,
+    in double grasp) raises (Error);
 
     /// Specifies a subchain of the robot as a limb, which can be used to create contacts.
     /// A limb must consist in a simple kinematic chain, where every node has only one child
@@ -251,7 +251,7 @@ module hpp
     /// \param loadValues whether other values computed for the limb database should be loaded
     /// \param disableEffectorCollision whether collision detection should be disabled for the end effector bones
     void addLimbDatabase(in string databasepath, in string id, in string heuristicName, in double loadValues,
-                         in double disableEffectorCollision,in double grasp) raises (Error);
+    in double disableEffectorCollision,in double grasp) raises (Error);
 
     /// Set the start state of a contact generation problem
     /// environment, ordered by their efficiency
@@ -356,26 +356,26 @@ module hpp
     short generateComTraj(in floatSeqSeq positions, in floatSeqSeq velocities, in floatSeqSeq accelerations, in double dt) raises (Error);
 
 		/// Create a linear path given list of positions
-		/// The path is composed of n+1 integrations
-		/// between the n positions.
-		/// The resulting path
-		/// is added to the problem solver
-		/// \param positions array of positions
-		/// \return id of the root path computed
-		short straightPath(in floatSeqSeq positions) raises (Error);
+                /// The path is composed of n+1 integrations
+                /// between the n positions.
+                /// The resulting path
+                /// is added to the problem solver
+                /// \param positions array of positions
+                /// \return id of the root path computed
+                short straightPath(in floatSeqSeq positions) raises (Error);
 
 		/// Create a trajectory corresponding to a bezier curve.
-		/// The coefficients give the order of the spline
-		/// \param coefficients array of positions
-		/// \return id of the path computed
-		short generateCurveTraj(in floatSeqSeq coefficients) raises (Error);
+                /// The coefficients give the order of the spline
+                /// \param coefficients array of positions
+                /// \return id of the path computed
+                short generateCurveTraj(in floatSeqSeq coefficients) raises (Error);
 
 		/// Create a trajectory corresponding to a bezier curve.
-		/// The coefficients give the order of the spline
-		/// \param coefficients array of positions
-		/// \param partitions array of positions
-		/// \return id of the path computed
-		short generateCurveTrajParts(in floatSeqSeq coefficients, in floatSeq partitions) raises (Error);
+                /// The coefficients give the order of the spline
+                /// \param coefficients array of positions
+                /// \param partitions array of positions
+                /// \return id of the path computed
+                short generateCurveTrajParts(in floatSeqSeq coefficients, in floatSeq partitions) raises (Error);
 
     /// Provided a path has already been computed and interpolated, generate a continuous path
     /// between two indicated states. The states do not need to be consecutive, but increasing in Id.
@@ -403,9 +403,9 @@ module hpp
     short limbRRTFromRootPath(in double state1, in double state2,  in  unsigned short path, in unsigned short numOptimizations) raises (Error);
 
 		/// Linear interpolation of many configurations into a path
-		/// \param configs list of configurations
-		/// \return id of the root path computed
-		short configToPath(in  floatSeqSeq configs) raises (Error);
+                /// \param configs list of configurations
+                /// \return id of the root path computed
+                short configToPath(in  floatSeqSeq configs) raises (Error);
 
     /// Provided a path has already been computed and interpolated, generate a continuous path
     /// between two indicated states. The states do not need to be consecutive, but increasing in Id.
@@ -433,10 +433,10 @@ module hpp
     /// \param numOptimizations Number of iterations of the shortcut algorithm to apply between each states
     /// \return id of the root path computed
     floatSeq comRRTFromPos(in double state1,
-                        in  unsigned short comTraj1,
-                        in  unsigned short comTraj2,
-                        in  unsigned short comTraj3,
-                        in unsigned short numOptimizations) raises (Error);
+    in  unsigned short comTraj1,
+    in  unsigned short comTraj2,
+    in  unsigned short comTraj3,
+    in unsigned short numOptimizations) raises (Error);
 
 
     /// Provided a path has already been computed and interpolated, generate a continuous path
@@ -453,10 +453,10 @@ module hpp
     /// \param numOptimizations Number of iterations of the shortcut algorithm to apply between each states
     /// \return id of the root path computed
     floatSeq comRRTFromPosBetweenState(in double state1,in double state2,
-                        in  unsigned short comTraj1,
-                        in  unsigned short comTraj2,
-                        in  unsigned short comTraj3,
-                        in unsigned short numOptimizations) raises (Error);
+    in  unsigned short comTraj1,
+    in  unsigned short comTraj2,
+    in  unsigned short comTraj3,
+    in unsigned short numOptimizations) raises (Error);
 
     /// Provided a path has already been computed and interpolated, generate a continuous path
     /// between two indicated states. The states do not need to be consecutive, but increasing in Id.
@@ -471,10 +471,10 @@ module hpp
     /// \param numOptimizations Number of iterations of the shortcut algorithm to apply between each states
     /// \return id of the root path computed
     floatSeq effectorRRT(in double state1,
-                        in  unsigned short comTraj1,
-                        in  unsigned short comTraj2,
-                        in  unsigned short comTraj3,
-                        in unsigned short numOptimizations) raises (Error);
+    in  unsigned short comTraj1,
+    in  unsigned short comTraj2,
+    in  unsigned short comTraj3,
+    in unsigned short numOptimizations) raises (Error);
 
 
     /// Provided a path has already been computed and interpolated, generate a continuous path
@@ -490,12 +490,12 @@ module hpp
     /// \param numOptimizations Number of iterations of the shortcut algorithm to apply between each states
     /// \return id of the root path computed
     floatSeq effectorRRTFromPath(in double state1, in  unsigned short refPath,
-                                    in double path_from, in double path_to,
-                                    in  unsigned short comTraj1,
-                                    in  unsigned short comTraj2,
-                                    in  unsigned short comTraj3,
-                                    in unsigned short numOptimizations,
-                                    in Names_t trackedEffectors) raises (Error);
+    in double path_from, in double path_to,
+    in  unsigned short comTraj1,
+    in  unsigned short comTraj2,
+    in  unsigned short comTraj3,
+    in unsigned short numOptimizations,
+    in Names_t trackedEffectors) raises (Error);
 
     /// Project a given state into a given COM position
     /// between two indicated states. The states do not need to be consecutive, but increasing in Id.
@@ -512,6 +512,11 @@ module hpp
     /// \param state index of first state.
     /// \return projected configuration
     floatSeq getConfigAtState(in unsigned short state) raises (Error);
+
+    /// Retrieve the configuration at the lastGenerateContact
+    /// Will fail if the state does not exist.
+    /// \return projected configuration
+    floatSeq getConfigLastGenerateContact() raises (Error);
 
     /// \param limb name of the limb for which the request aplies
     /// \param state1 current state considered
@@ -608,7 +613,11 @@ module hpp
     /// \return (success,NState) whether the creation was successful, as well as the new state
     short addNewContact(in unsigned short stateId, in string limbName, in floatSeq position, in floatSeq normal, in unsigned short max_num_sample) raises (Error);
 
-    short moveContactofLastGeneratedContact(in string limbName, in floatSeq position, in floatSeq normal, in unsigned short max_num_sample) raises (Error);
+    short generateLimbContact(in unsigned short stateId, in string limbName, in floatSeq position, in floatSeq normal, in unsigned short max_num_sample) raises (Error);
+
+    short generateRandomLimbContact(in floatSeq configurationIn, in Names_t contactLimbs, in floatSeq positions, in floatSeq rotations) raises (Error);
+
+    short generateGroundContact2(in floatSeq configurationIn, in Names_t contactLimbs, in floatSeq positions, in floatSeq rotations) raises (Error);
 
     /// removes a contact from the state
     /// if the limb is not already in contact, does nothing
@@ -630,6 +639,6 @@ module hpp
   }; // interface Robot
   }; // module rbprm
   }; // module corbaserver
-}; // module hpp
+  }; // module hpp
 
 #endif // HPP_RBPRM_CORBA_BUILDER_IDL

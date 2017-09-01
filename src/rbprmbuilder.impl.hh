@@ -250,6 +250,7 @@ namespace hpp {
         virtual hpp::floatSeq* projectToCom(double state, const hpp::floatSeq& targetCom, unsigned short max_num_sample) throw (hpp::Error);
         virtual CORBA::Short createState(const hpp::floatSeq& configuration, const hpp::Names_t& contactLimbs) throw (hpp::Error);
         virtual hpp::floatSeq* getConfigAtState(unsigned short stateId) throw (hpp::Error);
+        virtual hpp::floatSeq* getConfigLastGenerateContact() throw (hpp::Error);
         virtual double setConfigAtState(unsigned short stateId, const hpp::floatSeq& config) throw (hpp::Error);
         double projectStateToCOMEigen(unsigned short stateId, const model::Configuration_t& com_target, unsigned short maxNumeSamples)throw (hpp::Error);
         virtual double projectStateToCOM(unsigned short stateId, const hpp::floatSeq& com, unsigned short max_num_sample) throw (hpp::Error);
@@ -270,8 +271,11 @@ namespace hpp {
         virtual void dumpProfile(const char* logFile) throw (hpp::Error);
         virtual CORBA::Short addNewContact(unsigned short stateId, const char* limbName,
                                             const hpp::floatSeq& position, const hpp::floatSeq& normal, unsigned short max_num_sample) throw (hpp::Error);
-        virtual CORBA::Short moveContactofLastGeneratedContact(const char* limbName,
+        virtual CORBA::Short generateLimbContact(unsigned short stateId, const char* limbName,
                                                 const hpp::floatSeq& position, const hpp::floatSeq& normal, unsigned short max_num_sample) throw (hpp::Error);
+        virtual CORBA::Short generateRandomLimbContact(const hpp::floatSeq& configurationIn, const hpp::Names_t& contactLimbs,
+                                                       const hpp::floatSeq& position, const hpp::floatSeq& normal) throw (hpp::Error);
+        virtual CORBA::Short generateGroundContact2(const hpp::floatSeq& configurationIn, const hpp::Names_t& contactLimbs, const hpp::floatSeq& positions, const hpp::floatSeq& rotations) throw (hpp::Error);
         virtual CORBA::Short removeContact(unsigned short stateId, const char* limbName) throw (hpp::Error);
         virtual hpp::floatSeq* computeTargetTransform(const char* limbName, const hpp::floatSeq& configuration, const hpp::floatSeq& p, const hpp::floatSeq& n) throw (hpp::Error);
 
