@@ -259,6 +259,7 @@ namespace hpp {
         virtual hpp::floatSeq* getOctreeBox(const char* limbName, double sampleId) throw (hpp::Error);
         virtual CORBA::Short  isLimbInContact(const char* limbName, double state) throw (hpp::Error);
         virtual CORBA::Short  isLastGenerateContactLimbInContact(const char* limbName) throw (hpp::Error);
+        virtual void isConfigValid(const hpp::floatSeq& configuration, CORBA::Boolean& validity, CORBA::String_out report) throw (hpp::Error);
         virtual CORBA::Short  isLimbInContactIntermediary(const char* limbName, double state) throw (hpp::Error);
         virtual CORBA::Short  computeIntermediary(unsigned short state1, unsigned short state2) throw (hpp::Error);
         virtual hpp::floatSeqSeq* getOctreeBoxes(const char* limbName, const hpp::floatSeq& configuration) throw (hpp::Error);
@@ -268,6 +269,8 @@ namespace hpp {
         virtual double isLastGenerateContactBalanced() throw (hpp::Error);
         virtual void runSampleAnalysis(const char* analysis, double isstatic) throw (hpp::Error);
         virtual hpp::floatSeq* runLimbSampleAnalysis(const char* limbname, const char* analysis, double isstatic) throw (hpp::Error);
+        virtual void generateDataRandomConfig(hpp::floatSeq_out config, hpp::floatSeq_out leftFootTransform, hpp::floatSeq_out rightFootTransform, CORBA::Double_out stability, CORBA::Boolean_out noCollision) throw (hpp::Error);
+        virtual void generateDataRandomConfig8dim(hpp::floatSeq_out config, hpp::floatSeq_out leftFootTransform, hpp::floatSeq_out rightFootTransform, CORBA::Double_out stability, CORBA::Boolean_out noCollision) throw (hpp::Error);
         virtual void dumpProfile(const char* logFile) throw (hpp::Error);
         virtual CORBA::Short addNewContact(unsigned short stateId, const char* limbName,
                                             const hpp::floatSeq& position, const hpp::floatSeq& normal, unsigned short max_num_sample) throw (hpp::Error);
@@ -275,6 +278,10 @@ namespace hpp {
                                                 const hpp::floatSeq& position, const hpp::floatSeq& normal, unsigned short max_num_sample) throw (hpp::Error);
         virtual CORBA::Short generateRandomLimbContact(const hpp::floatSeq& configurationIn, const hpp::Names_t& contactLimbs,
                                                        const hpp::floatSeq& position, const hpp::floatSeq& normal) throw (hpp::Error);
+        virtual hpp::floatSeq* generateContactsFirstFootPos(const hpp::floatSeq& configuration,
+                                                      const hpp::floatSeq& direction, const char* limbName,
+                                                      const hpp::floatSeq& position, const hpp::floatSeq& normal,
+                                                      unsigned short max_num_sample ) throw (hpp::Error);
         virtual CORBA::Short generateGroundContact2(const hpp::floatSeq& configurationIn, const hpp::Names_t& contactLimbs, const hpp::floatSeq& positions, const hpp::floatSeq& rotations) throw (hpp::Error);
         virtual CORBA::Short removeContact(unsigned short stateId, const char* limbName) throw (hpp::Error);
         virtual hpp::floatSeq* computeTargetTransform(const char* limbName, const hpp::floatSeq& configuration, const hpp::floatSeq& p, const hpp::floatSeq& n) throw (hpp::Error);

@@ -527,6 +527,9 @@ raises (Error);
     /// \return whether the limb is in contact for the last state found using generateContact function
     short isLastGenerateContactLimbInContact(in string limbname) raises (Error);
 
+    void isConfigValid (in floatSeq dofArray, out boolean validity,
+                        out string report) raises (Error);
+
     /// Is limb in contact during the motion from the current state to the next one
     /// \param limb name of the limb for which the request aplies
     /// \param state1 current state considered
@@ -617,8 +620,12 @@ raises (Error);
 
     short generateRandomLimbContact(in floatSeq configurationIn, in Names_t contactLimbs, in floatSeq positions, in floatSeq rotations) raises (Error);
 
+    floatSeq generateContactsFirstFootPos(in floatSeq dofArray, in floatSeq direction, in string limbName, in floatSeq position, in floatSeq normal, in unsigned short max_num_sample) raises (Error);
+
     short generateGroundContact2(in floatSeq configurationIn, in Names_t contactLimbs, in floatSeq positions, in floatSeq rotations) raises (Error);
 
+    void generateDataRandomConfig(out floatSeq config, out floatSeq leftFootTransform, out floatSeq rightFootTransform, out double stability, out boolean noCollision) raises (Error);
+    void generateDataRandomConfig8dim(out floatSeq config, out floatSeq leftFootTransform, out floatSeq rightFootTransform, out double stability, out boolean noCollision) raises (Error);
     /// removes a contact from the state
     /// if the limb is not already in contact, does nothing
     /// \param state State considered
