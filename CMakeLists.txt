@@ -339,9 +339,9 @@ install(FILES
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/meshes/robot_test
   )
   
-install(DIRECTORY data/hyq_description
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/../
-  )
+#install(DIRECTORY data/hyq_description
+#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/../
+#  )
   
 SETUP_PROJECT_FINALIZE()
 
