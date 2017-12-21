@@ -68,10 +68,11 @@ namespace hpp {
     , fullBodyLoaded_(false)
     , bindShooter_()
     , analysisFactory_(0)
+    //Mathieu --- Learning
+    //, gmm_()
     {
         // NOTHING
     }
-
 
     hpp::floatSeq vectorToFloatseq (const hpp::core::vector_t& input)
     {
@@ -82,6 +83,75 @@ namespace hpp {
         dofArray [i] = input [i];
       }
       return floats;
+    }
+
+    //Mathieu --- Learning
+    typedef GMM::VectorCovarianceMatrix VectorCovarianceMatrix;
+    typedef GMM::MatrixDx MatrixDx;
+    typedef GMM::VectorX VectorX;
+
+    MatrixDx floatSeqToMatrix(unsigned int nb_gmm, const hpp::floatSeq& seq)
+    {
+        MatrixDx mat;
+        int iDof = 0;
+
+        for (unsigned int i=0; i<GMM::dim; i++)
+        {
+            for (unsigned int j=0; j<nb_gmm; j++)
+            {
+                mat(i,j) = (GMM::Scalar)seq[(_CORBA_ULong)iDof];
+            }
+            iDof++;
+        }
+
+        return mat;
+    }
+
+    VectorX floatSeqToVector(unsigned int nb_gmm, const hpp::floatSeq& seq)
+    {
+        VectorX vec;
+
+        for (unsigned int i=0; i<nb_gmm; i++)
+        {
+            vec(i) = (GMM::Scalar)seq[(_CORBA_ULong)i];
+        }
+
+        return vec;
+    }
+
+    VectorCovarianceMatrix floatSeqToVectorCovarianceMatrix(unsigned int nb_gmm, const hpp::floatSeq& covs)
+    {
+        VectorCovarianceMatrix eigenCovarsVec;
+        hpp::floatSeq cov;
+        unsigned int iSeq = 0;
+
+        for (unsigned int i=0; i<nb_gmm; i++)
+        {
+             for (unsigned int j=0; j<GMM::dim*GMM::dim; j++)
+             {
+                 cov[j] = covs[iSeq];
+                 iSeq++;
+             }
+
+             eigenCovarsVec.push_back(floatSeqToMatrix(nb_gmm, cov));
+        }
+
+        return eigenCovarsVec;
+    }
+
+
+    bool RbprmBuilder::setGMM(unsigned short nb_GMM, const hpp::floatSeq& weights, const hpp::floatSeq& means, const hpp::floatSeq& covs) throw (hpp::Error)
+    {
+        if(nb_GMM != weights.length() || GMM::dim*nb_GMM != means.length() ||
+           (GMM::dim*GMM::dim)*nb_GMM != covs.length())
+        {
+            std::cout << "Size Error:\n dim=" << GMM::dim << " and nb_GMM=" << nb_GMM << "but\nweights.length=" <<  weights.length() << ", means.length=" << means.length() << ", covs.length=" << covs.length() << std::endl;
+            return false;
+        }
+
+        gmm_ = new GMM(floatSeqToVectorCovarianceMatrix(nb_GMM, covs), floatSeqToMatrix(nb_GMM, means), floatSeqToVector(nb_GMM, weights));
+
+    return true;
     }
 
     void RbprmBuilder::loadRobotRomModel(const char* robotName,

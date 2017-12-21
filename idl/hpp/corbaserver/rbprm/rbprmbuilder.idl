@@ -156,6 +156,9 @@ module hpp
 		/// \return stateId
 		short createState(in floatSeq configuration, in Names_t contactLimbs) raises (Error);
 
+    ///Mathieu --- Learning
+    boolean setGMM(in unsigned short nb_GMM,  in floatSeq weights, in floatSeq means, in floatSeq covs) raises (Error);
+
     /// Get Sample configuration by its id
     /// \param sampleName name of the limb from which to retrieve a sample
     /// \param sampleId id of the desired samples
