@@ -88,11 +88,12 @@ namespace hpp {
     //Mathieu --- Learning
     typedef GMM::VectorCovarianceMatrix VectorCovarianceMatrix;
     typedef GMM::MatrixDx MatrixDx;
+    typedef GMM::MatrixD MatrixD;
     typedef GMM::VectorX VectorX;
 
     MatrixDx floatSeqToMatrix(unsigned int nb_gmm, const hpp::floatSeq& seq)
     {
-        MatrixDx mat;
+        MatrixDx mat = MatrixDx::Zero(GMM::dim, nb_gmm);
         int iDof = 0;
 
         for (unsigned int i=0; i<GMM::dim; i++)
@@ -109,7 +110,7 @@ namespace hpp {
 
     VectorX floatSeqToVector(unsigned int nb_gmm, const hpp::floatSeq& seq)
     {
-        VectorX vec;
+        VectorX vec(nb_gmm);
 
         for (unsigned int i=0; i<nb_gmm; i++)
         {
@@ -122,18 +123,19 @@ namespace hpp {
     VectorCovarianceMatrix floatSeqToVectorCovarianceMatrix(unsigned int nb_gmm, const hpp::floatSeq& covs)
     {
         VectorCovarianceMatrix eigenCovarsVec;
-        hpp::floatSeq cov;
         unsigned int iSeq = 0;
-
+        MatrixD cov;
         for (unsigned int i=0; i<nb_gmm; i++)
         {
-             for (unsigned int j=0; j<GMM::dim*GMM::dim; j++)
+             for (unsigned int j=0; j<GMM::dim; j++)
              {
-                 cov[j] = covs[iSeq];
-                 iSeq++;
+                 for (unsigned int k=0; k<GMM::dim; k++)
+                 {
+                     cov(j,k) = covs[(_CORBA_ULong)iSeq];
+                     iSeq++;
+                 }
              }
-
-             eigenCovarsVec.push_back(floatSeqToMatrix(nb_gmm, cov));
+             eigenCovarsVec.push_back(cov);
         }
 
         return eigenCovarsVec;
