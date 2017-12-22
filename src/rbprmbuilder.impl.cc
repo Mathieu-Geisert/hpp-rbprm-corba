@@ -54,6 +54,8 @@
     #include "hpp/rbprm/rbprm-profiler.hh"
 #endif
 
+//Mathieu --- Learning
+#include "hpp/rbprm/learning/GMM.hh"
 
 
 namespace hpp {
@@ -68,8 +70,6 @@ namespace hpp {
     , fullBodyLoaded_(false)
     , bindShooter_()
     , analysisFactory_(0)
-    //Mathieu --- Learning
-    //, gmm_()
     {
         // NOTHING
     }
@@ -86,10 +86,7 @@ namespace hpp {
     }
 
     //Mathieu --- Learning
-    typedef GMM::VectorCovarianceMatrix VectorCovarianceMatrix;
-    typedef GMM::MatrixDx MatrixDx;
-    typedef GMM::MatrixD MatrixD;
-    typedef GMM::VectorX VectorX;
+
 
     MatrixDx floatSeqToMatrix(unsigned int nb_gmm, const hpp::floatSeq& seq)
     {
@@ -151,7 +148,7 @@ namespace hpp {
             return false;
         }
 
-        gmm_ = new GMM(floatSeqToVectorCovarianceMatrix(nb_GMM, covs), floatSeqToMatrix(nb_GMM, means), floatSeqToVector(nb_GMM, weights));
+        GMM* gmm = new GMM(floatSeqToVectorCovarianceMatrix(nb_GMM, covs), floatSeqToMatrix(nb_GMM, means), floatSeqToVector(nb_GMM, weights));
 
     return true;
     }

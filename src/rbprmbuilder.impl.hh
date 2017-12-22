@@ -38,16 +38,13 @@
 #include <hpp/rbprm/dynamic/dynamic-path-validation.hh>
 # include "hpp/corbaserver/fwd.hh"
 
-//Mathieu --- Learning
-#include "locomote/stats/gmm-full.hpp"
-
 namespace hpp {
   namespace rbprm {
     namespace impl {
       using CORBA::Short;
 			typedef std::map<std::string, std::vector<boost::shared_ptr<model::CollisionObject> > > affMap_t;
 
-            typedef locomote::stats::GaussianMixtureModelFull<double, 9> GMM;
+
 
     struct BindShooter
     {
@@ -386,9 +383,6 @@ namespace hpp {
         rbprm::T_StateFrame lastStatesComputedTime_;
         sampling::AnalysisFactory* analysisFactory_;
         model::Configuration_t refPose_;
-
-        //Mathieu --- Learning
-        GMM* gmm_;
       }; // class RobotBuilder
     } // namespace impl
   } // namespace manipulation
