@@ -93,7 +93,17 @@ ps.client.problem.selectConFigurationShooter("RbprmShooter")
 ps.client.problem.selectPathValidation("RbprmPathValidation",0.01)
 
 
-
+#init GMM
+import numpy as np
+sampling_data_dir = "/home/mgeisert/data_learning"
+name = sampling_data_dir + "/dim9_GMM80_3e5_1000it"
+cov = np.load(name + "_covar.npy")
+weigth = np.load(name + "_weigth.npy")
+mean = np.load(name + "_mean.npy")
+m = mean.flat[:].tolist()
+w = weigth.flat[:].tolist()
+c = cov.flat[:].tolist()
+rbprmBuilder.client.rbprm.rbprm.setGMM(80,w,m,c)
 
 #solve the problem :
 r(q_init)
