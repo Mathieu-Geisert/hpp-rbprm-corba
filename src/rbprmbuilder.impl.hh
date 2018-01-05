@@ -51,7 +51,9 @@ namespace hpp {
         BindShooter(const std::size_t shootLimit = 10000,
                     const std::size_t displacementLimit = 100)
             : shootLimit_(shootLimit)
-            , displacementLimit_(displacementLimit) {}
+            , displacementLimit_(displacementLimit)
+            , gmm_(){}
+
 
         hpp::rbprm::RbPrmShooterPtr_t create (const hpp::model::DevicePtr_t& robot)
         {
@@ -60,7 +62,7 @@ namespace hpp {
     	        throw hpp::Error ("No affordances found. Unable to create shooter object.");
       		  }
             rbprm::RbPrmShooterPtr_t shooter = hpp::rbprm::RbPrmShooter::create
-                    (robotcast, problemSolver_->problem ()->collisionObstacles(), affMap_,
+                    (gmm_,robotcast, problemSolver_->problem ()->collisionObstacles(), affMap_,
 										romFilter_,affFilter_,shootLimit_,displacementLimit_);
             if(!so3Bounds_.empty())
                 shooter->BoundSO3(so3Bounds_);
@@ -134,7 +136,8 @@ namespace hpp {
         std::size_t shootLimit_;
         std::size_t displacementLimit_;
         std::vector<double> so3Bounds_;
-				affMap_t affMap_;
+        affMap_t affMap_;
+        GMMPtr_t gmm_;
     };
 
     class FullBodyMap {

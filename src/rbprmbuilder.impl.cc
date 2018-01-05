@@ -148,8 +148,9 @@ namespace hpp {
             return false;
         }
 
-        GMM* gmm = new GMM(floatSeqToVectorCovarianceMatrix(nb_GMM, covs), floatSeqToMatrix(nb_GMM, means), floatSeqToVector(nb_GMM, weights));
+        GMMPtr_t gmm(new GMM(floatSeqToVectorCovarianceMatrix(nb_GMM, covs), floatSeqToMatrix(nb_GMM, means), floatSeqToVector(nb_GMM, weights)));
 
+        bindShooter_.gmm_=gmm;
     return true;
     }
 
