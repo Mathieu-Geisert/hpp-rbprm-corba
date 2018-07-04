@@ -5,10 +5,10 @@ from hpp.gepetto import Viewer
 import slalom_bauzil_hrp2_pathKino as tp
 import time
 import omniORB.any
-from constraint_to_dae import *
+#from constraint_to_dae import *
 from display_tools import *
 from configs.slalom_bauzil import *
-from disp_bezier import *
+#from disp_bezier import *
 from hpp.corbaserver.rbprm.rbprmstate import State,StateHelper
 
 packageName = "hrp2_14_description"
