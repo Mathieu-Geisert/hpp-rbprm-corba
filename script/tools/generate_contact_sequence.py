@@ -96,8 +96,8 @@ def generateContactSequence(fb,configs,beginId,endId,viewer=None, curves_initGue
         # feets
         MRF = SE3.Identity()
         MLF = SE3.Identity()
-        MRF.translation = np.matrix(q_rl[0:3])
-        MLF.translation = np.matrix(q_ll[0:3])
+        MRF.translation = np.matrix(q_rl[0:3]).T
+        MLF.translation = np.matrix(q_ll[0:3]).T
         if not FORCE_STRAIGHT_LINE : 
             rot_rl = Quaternion(q_rl[3],q_rl[4],q_rl[5],q_rl[6])
             rot_ll = Quaternion(q_ll[3],q_ll[4],q_ll[5],q_ll[6])
@@ -111,8 +111,8 @@ def generateContactSequence(fb,configs,beginId,endId,viewer=None, curves_initGue
         # hands
         MRH = SE3()
         MLH = SE3()
-        MRH.translation = np.matrix(q_rh[0:3])
-        MLH.translation = np.matrix(q_lh[0:3])
+        MRH.translation = np.matrix(q_rh[0:3]).T
+        MLH.translation = np.matrix(q_lh[0:3]).T
         rot_rh = Quaternion(q_rh[3],q_rh[4],q_rh[5],q_rh[6])
         rot_lh = Quaternion(q_lh[3],q_lh[4],q_lh[5],q_lh[6])
         MRH.rotation = rot_rh.matrix()
@@ -242,7 +242,7 @@ def generateContactSequence(fb,configs,beginId,endId,viewer=None, curves_initGue
             phase_d.time_trajectory.append((fb.getDurationForState(stateId))*DURATION_n_CONTACTS/SPEED)
         phase_d.init_state=init_state
         phase_d.final_state=final_state
-        phase_d.reference_configurations.append(np.matrix(pinnochioQuaternion(configs[config_id][:-6])))        
+        phase_d.reference_configurations.append(np.matrix(pinnochioQuaternion(configs[config_id][:-6])).T)
         #print "done for double support"
         if DISPLAY_CONTACTS and viewer:
             displayContactsFromPhase(phase_d,viewer)
@@ -268,7 +268,7 @@ def generateContactSequence(fb,configs,beginId,endId,viewer=None, curves_initGue
                 phase_s.RH_patch.active = False
         # retrieve the COM position for init and final state 
          
-        phase_s.reference_configurations.append(np.matrix(pinnochioQuaternion(configs[config_id][:-6])))
+        phase_s.reference_configurations.append(np.matrix(pinnochioQuaternion(configs[config_id][:-6])).T)
         if init_guess_for_phase:
             # generate init state : 
             init_state = [0]*9
@@ -320,8 +320,8 @@ def generateContactSequence(fb,configs,beginId,endId,viewer=None, curves_initGue
     # feets
     MRF = SE3.Identity()
     MLF = SE3.Identity()
-    MRF.translation = np.matrix(q_rl[0:3])
-    MLF.translation = np.matrix(q_ll[0:3])
+    MRF.translation = np.matrix(q_rl[0:3]).T
+    MLF.translation = np.matrix(q_ll[0:3]).T
     if not FORCE_STRAIGHT_LINE :  
         rot_rl = Quaternion(q_rl[3],q_rl[4],q_rl[5],q_rl[6])
         rot_ll = Quaternion(q_ll[3],q_ll[4],q_ll[5],q_ll[6])
@@ -334,8 +334,8 @@ def generateContactSequence(fb,configs,beginId,endId,viewer=None, curves_initGue
     # hands
     MRH = SE3()
     MLH = SE3()
-    MRH.translation = np.matrix(q_rh[0:3])
-    MLH.translation = np.matrix(q_lh[0:3])
+    MRH.translation = np.matrix(q_rh[0:3]).T
+    MLH.translation = np.matrix(q_lh[0:3]).T
     rot_rh = Quaternion(q_rh[3],q_rh[4],q_rh[5],q_rh[6])
     rot_lh = Quaternion(q_lh[3],q_lh[4],q_lh[5],q_lh[6])
     MRH.rotation = rot_rh.matrix()
@@ -368,7 +368,7 @@ def generateContactSequence(fb,configs,beginId,endId,viewer=None, curves_initGue
         if var == rArmId:
             phase_d.RH_patch.placement = MRH
     # retrieve the COM position for init and final state (equal for double support phases)    
-    phase_d.reference_configurations.append(np.matrix(pinnochioQuaternion(configs[-1][:-6]))) 
+    phase_d.reference_configurations.append(np.matrix(pinnochioQuaternion(configs[-1][:-6])).T)
     if init_guess_for_phase:
         # generate init state : 
         init_state = [0]*9

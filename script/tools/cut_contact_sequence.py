@@ -72,8 +72,8 @@ def solveMuscodProblem(configsFull,cs):
                 mid_phase1.time_trajectory[j]=mid_phase0.time_trajectory[j] + init_time_at_step
             init_time_at_step += mid_phase0.time_trajectory[P3_Num_step] # need to offset all the times of the next phases by this value
             for j in range (P3_Num_step,len(mid_phase1.state_trajectory)): # second half, take and expand mid_phase1
-                mid_phase1.state_trajectory[j]=old_state_traj[(j-P3_Num_step)*2] 
-                mid_phase1.time_trajectory[j] = old_time_traj[(j-P3_Num_step)*2] +init_time_at_step
+                mid_phase1.state_trajectory[j]=old_state_traj[j]#[(j-P3_Num_step)*2]
+                mid_phase1.time_trajectory[j] = old_time_traj[j] +init_time_at_step #old_time_traj[(j-P3_Num_step)*2] +init_time_at_step
             finalSeq.contact_phases[(stepSize-3)*id_steps]=mid_phase1 
         else:
             finalSeq.contact_phases[0]=outputs[0].contact_phases[0] 
