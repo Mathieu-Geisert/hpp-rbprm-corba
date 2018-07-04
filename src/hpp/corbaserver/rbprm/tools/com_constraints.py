@@ -2,7 +2,7 @@ import matplotlib
 #~ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from cwc import cone_optimization
+#from cwc import cone_optimization
 from obj_to_constraints import ineq_from_file, rotate_inequalities
 import numpy as np
 import math
