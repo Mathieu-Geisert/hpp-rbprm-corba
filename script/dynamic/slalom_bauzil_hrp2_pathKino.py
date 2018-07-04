@@ -79,7 +79,7 @@ r = Viewer (ps)
 from hpp.corbaserver.affordance.affordance import AffordanceTool
 afftool = AffordanceTool ()
 afftool.setAffordanceConfig('Support', [0.5, 0.03, 0.2])
-afftool.loadObstacleModel (packageName, ENV_NAME, ENV_PREFIX, r,reduceSizes=[0.2,0,0])
+afftool.loadObstacleModel (packageName, ENV_NAME, ENV_PREFIX, r, reduceSizes=[0.2,0])
 #r.loadObstacleModel (packageName, "ground", "planning")
 #afftool.visualiseAffordances('Support', r,r.color.lightYellow)
 r.addLandmark(r.sceneName,1)
