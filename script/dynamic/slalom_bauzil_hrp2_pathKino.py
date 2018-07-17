@@ -133,7 +133,7 @@ from hpp.gepetto import PathPlayer
 pp = PathPlayer (rbprmBuilder.client.basic, r)
 pp.dt=0.03
 pp.displayVelocityPath(2)
-r.client.gui.setVisibility("path_2_root","ALWAYS_ON_TOP")
+#r.client.gui.setVisibility("path_2_root","ALWAYS_ON_TOP")
 
 
 

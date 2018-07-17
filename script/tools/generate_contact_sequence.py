@@ -18,22 +18,25 @@ def pinnochioQuaternion(q):
 
 def addContactLandmark(M,color,viewer):
     global i_sphere
-    gui = viewer.client.gui
-    name = 's'+str(i_sphere)
-    i_sphere += 1    
-    gui.addSphere(name,0.01,color)
-    #gui.setVisibility(name,"ALWAYS_ON_TOP")
-    gui.addToGroup(name,viewer.sceneName)
-    p = M.translation.transpose().tolist()[0]
-    rot = Quaternion(M.rotation)
-    p +=  [rot.w]
-    p += rot.coeffs().transpose().tolist()[0][0:3]
-    gui.applyConfiguration(name,p)
-    gui.addLandmark(name,0.03) 
-    #print "contact altitude : "+str(p[2])
-    
+    try:
+      gui = viewer.client.gui
+      name = 's'+str(i_sphere)
+      i_sphere += 1    
+      gui.addSphere(name,0.01,color)
+      #gui.setVisibility(name,"ALWAYS_ON_TOP")
+      gui.addToGroup(name,viewer.sceneName)
+      p = M.translation.transpose().tolist()[0]
+      rot = Quaternion(M.rotation)
+      p +=  [rot.w]
+      p += rot.coeffs().transpose().tolist()[0][0:3]
+      gui.applyConfiguration(name,p)
+      gui.addLandmark(name,0.03) 
+      #print "contact altitude : "+str(p[2])
+    except:
+      pass
     
 def displayContactsFromPhase(phase,viewer):
+  try:
     if phase.LF_patch.active:
         addContactLandmark(phase.LF_patch.placement*MLsole_display,viewer.color.red ,viewer)
     if phase.RF_patch.active:
@@ -41,8 +44,10 @@ def displayContactsFromPhase(phase,viewer):
     if phase.LH_patch.active:
         addContactLandmark(phase.LH_patch.placement*MLhand_display,viewer.color.yellow ,viewer)
     if phase.RH_patch.active:
-        addContactLandmark(phase.RH_patch.placement*MRhand_display,viewer.color.blue ,viewer)                 
+        addContactLandmark(phase.RH_patch.placement*MRhand_display,viewer.color.blue ,viewer)                
     viewer.client.gui.refresh() 
+  except:
+    pass
     
         
 
