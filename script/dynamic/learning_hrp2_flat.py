@@ -64,7 +64,8 @@ r = Viewer (ps)
 from hpp.corbaserver.affordance.affordance import AffordanceTool
 afftool = AffordanceTool ()
 afftool.setAffordanceConfig('Support', [0.5, 0.03, 0.00005])
-afftool.loadObstacleModel ('hpp-rbprm-corba', "bauzil_stairs", "planning", r)
+#afftool.loadObstacleModel ('hpp-rbprm-corba', "bauzil_stairs", "planning", r)
+afftool.loadObstacleModel ('hpp-rbprm-corba', "darpa_no_ctc_mid", "planning", r)
 #r.loadObstacleModel (packageName, "ground", "planning")
 afftool.visualiseAffordances('Support', r, r.color.lightBrown)
 r.addLandmark(r.sceneName,1)
@@ -73,22 +74,26 @@ r.addLandmark(r.sceneName,1)
 q_init = rbprmBuilder.getCurrentConfig ();
 q_init[3:7] = [1,0,0,0]
 q_init [0:3] = [-1, 1, 0.58]; r (q_init)
-q_init[-6]=0.1
+q_init[-6]=0.0
+
 
 rbprmBuilder.setCurrentConfig (q_init)
 q_goal = q_init [::]
 
 
 q_goal [0:3] = [-1, -1.5, 0.58]; r(q_goal)
-q_goal[-6]=0
-q_goal[-5]=-0.1
+q_goal[-6]=0.
+q_goal[-5]=0.
 r (q_goal)
 
 
 # Choosing a path optimizer
+q_init[:3] = [-2., 0., 0.55]
+q_goal[:3] = [2., 0., 0.55]
 ps.setInitialConfig (q_init)
 ps.addGoalConfig (q_goal)
 # Choosing RBPRM shooter and path validation methods.
+ps.selectPathPlanner("BiRRTPlanner")
 ps.client.problem.selectConFigurationShooter("RbprmShooter")
 ps.client.problem.selectPathValidation("RbprmPathValidation",0.01)
 
@@ -111,8 +116,12 @@ r(q_init)
 
 # Fait une seul iteration du planning (pour tester), a remplacer par ps.solve() quand c'est bon
 ps.client.problem.prepareSolveStepByStep()
-ps.client.problem.executeOneStep()
+#ps.client.problem.executeOneStep()
+ps.solve()
 
+from hpp.gepetto import PathPlayer
+pp = PathPlayer (rbprmBuilder.client.basic, r)
+pp(0)
 
 global i_sphere
 i_sphere=0
@@ -133,8 +142,6 @@ def displaySpheres(q,color=r.color.black,size=0.03):
 q_far = q_init[::]
 q_far[2] = -3
 r(q_far)
-
-
 
 
 
