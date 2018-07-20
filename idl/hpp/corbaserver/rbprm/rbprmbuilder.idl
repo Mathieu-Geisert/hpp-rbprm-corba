@@ -619,7 +619,7 @@ raises (Error);
     short generateLimbContact(in unsigned short stateId, in string limbName, in floatSeq position, in floatSeq normal, in unsigned short max_num_sample) raises (Error);
 
     short generateRandomLimbContact(in floatSeq configurationIn, in Names_t contactLimbs, in floatSeq positions, in floatSeq rotations) raises (Error);
-
+    short generateRandomLimbContact_constUpperBody(in floatSeq configurationIn, in Names_t contactLimbs, in floatSeq positions, in floatSeq rotations) raises (Error);
     floatSeq generateContactsFirstFootPos(in floatSeq dofArray, in floatSeq direction, in string limbName, in floatSeq position, in floatSeq normal, in unsigned short max_num_sample) raises (Error);
 
     short generateGroundContact2(in floatSeq configurationIn, in Names_t contactLimbs, in floatSeq positions, in floatSeq rotations) raises (Error);

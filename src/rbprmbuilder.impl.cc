@@ -2986,6 +2986,64 @@ CORBA::Short RbprmBuilder::generateRandomLimbContact(const hpp::floatSeq& config
     }
 }
 
+CORBA::Short RbprmBuilder::generateRandomLimbContact_constUpperBody(const hpp::floatSeq& configurationIn, const hpp::Names_t& contactLimbs,
+                                                     const hpp::floatSeq& position, const hpp::floatSeq& normal) throw (hpp::Error)
+{
+    try
+    {
+        model::Configuration_t configuration = dofArrayToConfig (fullBody()->device_, configurationIn);
+        BasicConfigurationShooterPtr_t shooter = BasicConfigurationShooter::create(fullBody()->device_);
+        Configuration_t random_conf = *shooter->shoot();
+        Configuration_t tail = random_conf.tail<12>();
+        State ns;
+        ns.configuration_ = configuration;
+	
+        //ns.configuration_.tail<12>() = tail;
+        lastStateGenerateContact_ = ns;
+
+        Configuration_t pos = dofArrayToConfig (std::size_t(6), position);
+        Configuration_t norm = dofArrayToConfig (std::size_t(6), normal);
+        std::vector<std::string> limbNames = stringConversion(contactLimbs);
+        projection::ProjectionReport rep;
+        for(int j=0; j<limbNames.size(); ++j)
+        {
+            fcl::Vec3f p; for(int i =0; i<3; ++i) p[i] = pos[j*3+i];
+            fcl::Vec3f n; for(int i =0; i<3; ++i) n[i] = norm[j*3+i];
+            rep = projection::projectLimbToObstacle(fullBody(), limbNames[j], fullBody()->GetLimbs().at(limbNames[j]), ns, n, p);
+            if (!rep.success_)
+            {
+                return 0;
+            }
+            ns = rep.result_;
+        }
+
+        lastStateGenerateContact_ = rep.result_;
+        ValidationReportPtr_t rport (ValidationReportPtr_t(new CollisionValidationReport));
+        CollisionValidationPtr_t val = fullBody()->GetCollisionValidation();
+        if (!val->validate(rep.result_.configuration_,rport))
+        {
+            return 1;
+        }
+
+        if (0 < stability::IsStable(fullBody(),rep.result_))
+        {
+            return 3;
+            lastStateGenerateContact_ = rep.result_;
+        }
+        else
+        {
+            return 2;
+        }
+
+
+    }
+    catch(std::runtime_error& e)
+    {
+        std::cout << "ERROR " << e.what() << std::endl;
+        throw Error(e.what());
+    }
+}
+
 CORBA::Short RbprmBuilder::generateGroundContact2(const hpp::floatSeq& configurationIn, const hpp::Names_t& contactLimbs, const hpp::floatSeq& positions, const hpp::floatSeq& rotations)
 throw (hpp::Error)
 {

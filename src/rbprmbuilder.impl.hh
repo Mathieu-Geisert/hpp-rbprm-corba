@@ -278,6 +278,9 @@ namespace hpp {
                                                 const hpp::floatSeq& position, const hpp::floatSeq& normal, unsigned short max_num_sample) throw (hpp::Error);
         virtual CORBA::Short generateRandomLimbContact(const hpp::floatSeq& configurationIn, const hpp::Names_t& contactLimbs,
                                                        const hpp::floatSeq& position, const hpp::floatSeq& normal) throw (hpp::Error);
+	virtual CORBA::Short generateRandomLimbContact_constUpperBody(const hpp::floatSeq& configurationIn, const hpp::Names_t& contactLimbs,
+                                                     const hpp::floatSeq& position, const hpp::floatSeq& normal) throw (hpp::Error);
+
         virtual hpp::floatSeq* generateContactsFirstFootPos(const hpp::floatSeq& configuration,
                                                       const hpp::floatSeq& direction, const char* limbName,
                                                       const hpp::floatSeq& position, const hpp::floatSeq& normal,
