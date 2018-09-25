@@ -18,7 +18,7 @@ def call_muscod(forceFormulation=False):
   else :
     DAT_NAME = REDUCED_DAT_NAME
   #cmd = "ssh"+d+"iwaki 'cd "+MUSCOD_DIR+" ; source /local/pfernbac/config.sh ; muscod_release "+DAT_NAME+" ; killall pgxwin_server'"
-  cmd = "ssh"+d+"iwaki 'cd "+MUSCOD_DIR+" ; source /local/pfernbac/config.sh ; muscod_release "+DAT_NAME+"' "
+  cmd = "cd "+MUSCOD_DIR+" ; muscod_release "+DAT_NAME+"; "
   print "calling muscod for file : "+DAT_NAME
   print "in directory : "+MUSCOD_DIR
   try :
