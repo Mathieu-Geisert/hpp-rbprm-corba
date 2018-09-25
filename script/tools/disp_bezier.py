@@ -7,6 +7,7 @@ from numpy.linalg import norm
 
 
 def displayBezierCurve(r,curve,step=0.001,color=[0.85, 0.75, 0.15, 1.0],name=None,offset = None):
+  try:  
     if name==None:
         name="bezier_curve"
         list = r.client.gui.getNodeList()
@@ -27,6 +28,8 @@ def displayBezierCurve(r,curve,step=0.001,color=[0.85, 0.75, 0.15, 1.0],name=Non
     r.client.gui.addCurve(name,path,color)
     r.client.gui.addToGroup(name,r.sceneName)    
     r.client.gui.refresh()
+  except:
+    pass
 
 def displayBezierWaypoints(r,wp,step=0.001,color=[0.85, 0.75, 0.15, 1.0],name=None):
     waypoints=matrix(wp).transpose()
@@ -35,6 +38,7 @@ def displayBezierWaypoints(r,wp,step=0.001,color=[0.85, 0.75, 0.15, 1.0],name=No
     return curve
 
 def showPath(r,pp,pid):
+  try:
     if len(pid)==1:
         pp.displayPath(int(pid[0]),color=r.color.red)
         r.client.gui.setVisibility('path_'+str(int(pid[0]))+'_root','ALWAYS_ON_TOP')
@@ -49,5 +53,6 @@ def showPath(r,pp,pid):
         print "only two phases, not implemented yet."
     else:
         print "no path, test failed."
-
+  except:
+    pass
 
