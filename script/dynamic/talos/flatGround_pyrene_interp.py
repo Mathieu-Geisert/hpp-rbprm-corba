@@ -18,26 +18,35 @@ pId = tp.ps.numberPaths() -1
 fullBody = FullBody ()
 
 fullBody.loadFullBodyModel(urdfName, rootJointType, meshPackageName, packageName, urdfSuffix, srdfSuffix)
-fullBody.setJointBounds ("base_joint_xyz",  [-5,5, -1.5, 1.5, 0.95, 1.05])
+fullBody.setJointBounds ("base_joint_xyz", tp.root_bounds )
 fullBody.client.basic.robot.setDimensionExtraConfigSpace(tp.extraDof)
-fullBody.client.basic.robot.setExtraConfigSpaceBounds([-0,0,-0,0,-0,0,0,0,0,0,0,0])
+fullBody.client.basic.robot.setExtraConfigSpaceBounds(tp.extraDof_bounds)
+#ullBody.client.basic.robot.setExtraConfigSpaceBounds([0,0,0,0,0,0,0,0,0,0,0,0])
 ps = tp.ProblemSolver( fullBody )
 ps.client.problem.setParameter("aMax",tp.aMax)
 ps.client.problem.setParameter("vMax",tp.vMax)
 r = tp.Viewer (ps,viewerClient=tp.r.client, displayCoM = True)
 
-
+#Change q_ref to spread more the legs when walking. NOTE: ankle orientation also need to be changed so the feet stay horizontal, otherwise "too much repositionning" occurs but I don't know why...
 q_ref = [
         0.0, 0.0,  1.0232773,  1 ,  0.0, 0.0, 0.0,                   #Free flyer
-        0.0,  0.0, -0.411354,  0.859395, -0.448041, -0.001708,          #Left Leg
-        0.0,  0.0, -0.411354,  0.859395, -0.448041, -0.001708,          #Right Leg
+        0.0,  0.06, -0.411354,  0.859395, -0.448041, -0.061708, #-0.001708         #Left Leg
+        0.0,  -0.06, -0.411354,  0.859395, -0.448041, 0.058292, #-0.001708,          #Right Leg
         0.0 ,  0.006761,                                                #Chest
-        0.25847 ,  0.173046, -0.0002, -0.525366, 0.0, -0.0,  0.1,-0.005,  #Left Arm
+        0.25847 , 0.173046, -0.0002, -0.525366, 0.0, -0.0,  0.1,-0.005,  #Left Arm
         -0.25847 , -0.173046, 0.0002  , -0.525366, 0.0,  0.0,  0.1,-0.005,#Right Arm
         0.,  0.  ,                                                       #Head
         0,0,0,0,0,0]; r (q_ref)
 
-q_init = q_ref[::]
+q_init = [
+        0.0, 0.0,  1.0232773,  1 ,  0.0, 0.0, 0.0,                   #Free flyer
+        0.0,  0., -0.411354,  0.859395, -0.448041, -0.001708,          #Left Leg
+        0.0,  0., -0.411354,  0.859395, -0.448041, -0.001708,          #Right Leg
+        0.0 ,  0.006761,                                                #Chest
+        0.25847 , 0.173046, -0.0002, -0.525366, 0.0, -0.0,  0.1,-0.005,  #Left Arm
+        -0.25847 , -0.173046, 0.0002  , -0.525366, 0.0,  0.0,  0.1,-0.005,#Right Arm
+        0.,  0.  ,                                                       #Head
+        0,0,0,0,0,0]; r (q_init)
 
 fullBody.setReferenceConfig(q_ref)
 """
@@ -52,14 +61,15 @@ qfar=q_ref[::]
 qfar[2] = -5
 
 tStart = time.time()
-# generate databases : 
+#filterStates = False) generate databases : 
 
-nbSamples = 50000
+nbSamples = 300000
+octreeSize = 0.025
 rLegOffset = MRsole_offset.translation.transpose().tolist()[0]
 rLegOffset[2] += 0.006
 rLegNormal = [0,0,1]
 rLegx = 0.1; rLegy = 0.06
-fullBody.addLimb(rLegId,rleg,rfoot,rLegOffset,rLegNormal, rLegx, rLegy, nbSamples, "fixedStep06", 0.01)
+fullBody.addLimb(rLegId,rleg,rfoot,rLegOffset,rLegNormal, rLegx, rLegy, nbSamples, "fixedStep06", octreeSize)
 fullBody.runLimbSampleAnalysis(rLegId, "ReferenceConfiguration", True)
 #fullBody.saveLimbDatabase(rLegId, "./db/talos_rLeg_walk.db")
 
@@ -67,7 +77,7 @@ lLegOffset = MLsole_offset.translation.transpose().tolist()[0]
 lLegOffset[2] += 0.006
 lLegNormal = [0,0,1]
 lLegx = 0.1; lLegy = 0.06
-fullBody.addLimb(lLegId,lleg,lfoot,lLegOffset,rLegNormal, lLegx, lLegy, nbSamples, "fixedStep06", 0.01)
+fullBody.addLimb(lLegId,lleg,lfoot,lLegOffset,rLegNormal, lLegx, lLegy, nbSamples, "fixedStep06", octreeSize)
 fullBody.runLimbSampleAnalysis(lLegId, "ReferenceConfiguration", True)
 #fullBody.saveLimbDatabase(rLegId, "./db/talos_lLeg_walk.db")
 
@@ -100,14 +110,15 @@ print "generate databases in : "+str(tGenerate)+" s"
 q_0 = fullBody.getCurrentConfig(); 
 #~ fullBody.createOctreeBoxes(r.client.gui, 1, rarmId, q_0,)
 
-
+eps=0.00001
 configSize = fullBody.getConfigSize() -fullBody.client.basic.robot.getDimensionExtraConfigSpace()
 
-q_init[0:7] = tp.ps.configAtParam(pId,0.01)[0:7] # use this to get the correct orientation
-q_goal = q_init[::]; q_goal[0:7] = tp.ps.configAtParam(pId,tp.ps.pathLength(pId))[0:7]
-dir_init = tp.ps.configAtParam(pId,0.01)[tp.indexECS:tp.indexECS+3]
-acc_init = tp.ps.configAtParam(pId,0.01)[tp.indexECS+3:tp.indexECS+6]
-dir_goal = tp.ps.configAtParam(pId,tp.ps.pathLength(pId)-0.01)[tp.indexECS:tp.indexECS+3]
+q_init[0:7] = tp.ps.configAtParam(pId,eps)[0:7] # use this to get the correct orientation
+q_goal = q_init[::];
+q_goal[0:7] = tp.ps.configAtParam(pId,tp.ps.pathLength(pId))[0:7]
+dir_init = tp.ps.configAtParam(pId,eps)[tp.indexECS:tp.indexECS+3]
+acc_init = [0,0,0] #tp.ps.configAtParam(pId,0.01)[tp.indexECS+3:tp.indexECS+6]
+dir_goal =  tp.ps.configAtParam(pId,tp.ps.pathLength(pId)-eps)[tp.indexECS:tp.indexECS+3] #tp.ps.configAtParam(pId,tp.ps.pathLength(pId)-0.01)[tp.indexECS:tp.indexECS+3]
 acc_goal = [0,0,0]
 
 robTreshold = 3
@@ -126,12 +137,12 @@ fullBody.setStaticStability(True)
 # Randomly generating a contact configuration at q_init
 fullBody.setCurrentConfig (q_init)
 r(q_init)
-#q_init = fullBody.generateContacts(q_init,dir_init,acc_init,robTreshold)
+q_init = fullBody.generateContacts(q_init,dir_init,acc_init,robTreshold)
 r(q_init)
 
 # Randomly generating a contact configuration at q_end
 fullBody.setCurrentConfig (q_goal)
-#q_goal = fullBody.generateContacts(q_goal, dir_goal,acc_goal,robTreshold)
+q_goal = fullBody.generateContacts(q_goal, dir_goal,acc_goal,robTreshold)
 r(q_goal)
 
 # specifying the full body configurations as start and goal state of the problem
@@ -141,15 +152,17 @@ r(q_init)
 
 fullBody.setStartState(q_init,[rLegId,lLegId])
 fullBody.setEndState(q_goal,[rLegId,lLegId])
-
+fullBody.setStaticStability(True) # only set it after the init/goal configuration are computed
 
 from hpp.gepetto import PathPlayer
 pp = PathPlayer (fullBody.client.basic, r)
 
 
+print "START SOLVING CONTACT SEQUENCE."
 tStart = time.time()
-configsFull = fullBody.interpolate(0.01,pathId=pId,robustnessTreshold = 2, filterStates = False)
+configsFull = fullBody.interpolate(0.01,pathId=pId,robustnessTreshold = 2, filterStates = True, testReachability=True, quasiStatic=False)
 tInterpolateConfigs = time.time() - tStart
+print "CONTACT SEQUENCE FINISHED."
 print "number of configs :", len(configsFull)
 
 
@@ -160,8 +173,11 @@ from configs.talos_flatGround import *
 from generate_contact_sequence import *
 
 beginState = 0
-endState = 6
+endState = len(configsFull)-1
 configs=configsFull[beginState:endState+1]
+for config in configs:
+  r(config)
+  time.sleep(0.5)
 cs = generateContactSequence(fullBody,configs,beginState, endState,r)
 #player.displayContactPlan()
 

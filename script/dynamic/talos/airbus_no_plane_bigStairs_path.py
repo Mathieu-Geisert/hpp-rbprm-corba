@@ -4,7 +4,7 @@ from hpp.corbaserver import Client
 from hpp.corbaserver.robot import Robot as Parent
 from hpp.corbaserver.rbprm.problem_solver import ProblemSolver
 import omniORB.any
-from planning.configs.talos_airbus_bigStairs import *
+from configs.talos_airbus_bigStairs import *
 import time
 
 class Robot (Parent):

@@ -52,7 +52,9 @@ aMax = 0.1;
 extraDof = 6
 
 #rbprmBuilder.setJointBounds ("base_joint_xyz", [-1,2.5,0.5 ,3, 0.6, 0.6])
-rbprmBuilder.setJointBounds ("base_joint_xyz", [-1,2.5,0.5 ,3, 0.6, 0.6])
+#rbprmBuilder.setJointBounds ("base_joint_xyz", [-1,2.5,0.5 ,3, 0.6, 0.6])
+base_bound = [1.,3.5,0. ,3., 0.6, 0.6] 
+rbprmBuilder.setJointBounds ("base_joint_xyz", base_bound)
 rbprmBuilder.setJointBounds('CHEST_JOINT0',[-0.05,0.05])
 rbprmBuilder.setJointBounds('CHEST_JOINT1',[-0.05,0.05])
 # We also bound the rotations of the torso. (z, y, x)
@@ -78,24 +80,26 @@ r = Viewer (ps)
 
 from hpp.corbaserver.affordance.affordance import AffordanceTool
 afftool = AffordanceTool ()
-afftool.setAffordanceConfig('Support', [0.5, 0.03, 0.2])
-afftool.loadObstacleModel (packageName, ENV_NAME, ENV_PREFIX, r, reduceSizes=[0.2,0])
+#afftool.setAffordanceConfig('Support', [0.5, 0.03, 0.2])
+afftool.setAffordanceConfig('Support', [0.5, 0.03, 0.05])
+#afftool.loadObstacleModel (packageName, ENV_NAME, ENV_PREFIX, r, reduceSizes=[0.2,0])
+afftool.loadObstacleModel (packageName, ENV_NAME, ENV_PREFIX, r, reduceSizes=[0.14,0.])
 #r.loadObstacleModel (packageName, "ground", "planning")
-#afftool.visualiseAffordances('Support', r,r.color.lightYellow)
+afftool.visualiseAffordances('Support', r,r.color.lightYellow)
 r.addLandmark(r.sceneName,1)
 
 # Setting initial and goal configurations
 q_init = rbprmBuilder.getCurrentConfig ();
 q_init[3:7] = [1,0,0,0]
-q_init [0:3] = [-0.9, 1, 0.6]; r (q_init)
+q_init [0:3] = [1., 2.5, 0.6]; r (q_init)
 #q_init [0:3] = [0.5, 2.5, 0.6]; r (q_init)
-q_init[-6:-3] = [0.05,0,0]
+q_init[-6:-3] = [0.05,0.,0.]
 
 
 rbprmBuilder.setCurrentConfig (q_init)
 q_goal = q_init [::]
 
-q_goal [0:3] = [2, 2.5, 0.6]; r(q_goal)
+q_goal [0:3] = [3.5, 0., 0.6]; r(q_goal)
 #q_goal [0:3] = [1.83, 0.86, 1.13]; r(q_goal)
 
 

@@ -17,7 +17,7 @@ rootJointType = "freeflyer"
 ##
 #  Information to retrieve urdf and srdf files.
 urdfName = "hrp2_14"
-urdfSuffix = "_reduced_kinematics"
+urdfSuffix = "_reduced" #_kinematics"
 srdfSuffix = ""
 pId = tp.ps.numberPaths() -1
 fullBody = FullBody ()
@@ -44,22 +44,22 @@ tStart = time.time()
 
 
 rLeg = 'RLEG_JOINT0'
-rLegOffset = [0,0,-0.105]
+rLegOffset = [0,0,-0.0955]
 rLegLimbOffset=[0,0,-0.035]#0.035
 rLegNormal = [0,0,1]
 rLegx = 0.09; rLegy = 0.05
 #fullBody.addLimbDatabase("./db/hrp2_rleg_db.db",rLegId,"forward")
-fullBody.addLimb(rLegId,rLeg,'',rLegOffset,rLegNormal, rLegx, rLegy, 100000, "dynamicWalk", 0.01,"_6_DOF",limbOffset=rLegLimbOffset)
+fullBody.addLimb(rLegId,rLeg,'',rLegOffset,rLegNormal, rLegx, rLegy, 100000, "dynamicWalk", 0.025,"_6_DOF",limbOffset=rLegLimbOffset)
 fullBody.runLimbSampleAnalysis(rLegId, "ReferenceConfiguration", True)
 #fullBody.saveLimbDatabase(rLegId, "./db/hrp2_rleg_db.db")
 
 lLeg = 'LLEG_JOINT0'
-lLegOffset = [0,0,-0.105]
+lLegOffset = [0,0,-0.0955]
 lLegLimbOffset=[0,0,0.035]
 lLegNormal = [0,0,1]
 lLegx = 0.09; lLegy = 0.05
 #fullBody.addLimbDatabase("./db/hrp2_lleg_db.db",lLegId,"forward")
-fullBody.addLimb(lLegId,lLeg,'',lLegOffset,rLegNormal, lLegx, lLegy, 100000, "dynamicWalk", 0.01,"_6_DOF",limbOffset=lLegLimbOffset)
+fullBody.addLimb(lLegId,lLeg,'',lLegOffset,rLegNormal, lLegx, lLegy, 100000, "dynamicWalk", 0.025,"_6_DOF",limbOffset=lLegLimbOffset)
 fullBody.runLimbSampleAnalysis(lLegId, "ReferenceConfiguration", True)
 #fullBody.saveLimbDatabase(lLegId, "./db/hrp2_lleg_db.db")
 fullBody.setReferenceConfig (q_ref)
@@ -160,7 +160,7 @@ player = fullBodyPlayerHrp2.Player(fullBody,pp,tp,configsFull,draw=False,use_win
 #player.interpolate(2,len(configs)-1)
 
 
-from planning.config import *
+from config import *
 from generate_contact_sequence import *
 
 beginState = 0

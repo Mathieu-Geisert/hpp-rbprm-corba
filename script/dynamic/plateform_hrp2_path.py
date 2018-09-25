@@ -4,7 +4,7 @@ from hpp.corbaserver import Client
 from hpp.corbaserver.robot import Robot as Parent
 from hpp.corbaserver.rbprm.problem_solver import ProblemSolver
 import omniORB.any
-from planning.configs.platform_config import *
+from configs.platform_config import *
 import time
 
 class Robot (Parent):
@@ -86,7 +86,7 @@ rbprmBuilder.setCurrentConfig (q_init)
 q_goal = q_init [::]
 
 
-q_goal[3:7] = [1,0,0,0]
+q_goal[3:7] = [0.7071,0,0,0.7071]
 q_goal [0:3] = [1.15, 0, 0.58]; r (q_goal)
 
 r (q_goal)

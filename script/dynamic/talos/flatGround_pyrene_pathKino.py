@@ -6,6 +6,7 @@ from hpp.corbaserver.rbprm.problem_solver import ProblemSolver
 import omniORB.any
 from configs.talos_flatGround import *
 import time
+import math
 
 class Robot (Parent):
 	rootJointType = 'freeflyer'
@@ -29,15 +30,16 @@ urdfName = 'talos_trunk'
 urdfNameRom =  ['talos_larm_rom','talos_rarm_rom','talos_lleg_rom','talos_rleg_rom']
 urdfSuffix = ""
 srdfSuffix = ""
-vMax = omniORB.any.to_any(0.3);
-aMax = omniORB.any.to_any(0.1);
+vMax = omniORB.any.to_any(0.3)
+aMax = omniORB.any.to_any(0.1)
 #aMax = omniORB.any.to_any(0.3);
 extraDof = 6
 mu=omniORB.any.to_any(MU)
 # Creating an instance of the helper class, and loading the robot
+root_bounds = [1.,3.5,0.,2.5, 0.8, 0.8]
 rbprmBuilder = Builder ()
 rbprmBuilder.loadModel(urdfName, urdfNameRom, rootJointType, meshPackageName, packageName, urdfSuffix, srdfSuffix)
-rbprmBuilder.setJointBounds ("base_joint_xyz", [-5,5, -1.5, 1.5, 0.95, 1.05])
+rbprmBuilder.setJointBounds ("base_joint_xyz", root_bounds)
 
 
 # The following lines set constraint on the valid configurations:
@@ -46,9 +48,18 @@ rbprmBuilder.setFilter(['talos_lleg_rom','talos_rleg_rom'])
 rbprmBuilder.setAffordanceFilter('talos_lleg_rom', ['Support',])
 rbprmBuilder.setAffordanceFilter('talos_rleg_rom', ['Support'])
 # We also bound the rotations of the torso. (z, y, x)
-rbprmBuilder.boundSO3([-0.1,0.1,-0.65,0.65,-0.2,0.2])
+#rbprmBuilder.boundSO3([-math.pi,math.pi,-0.65,0.65,-0.2,0.2])
+
+#rbprmBuilder.boundSO3([-math.pi,math.pi,-0.1,0.1,-0.1,0.1])
+#rbprmBuilder.client.basic.robot.setDimensionExtraConfigSpace(extraDof)
+#extraDof_bounds = [-1.,1.,-1.,1.,-2.,2.,0.,0.,0.,0.,0.,0.]
+#rbprmBuilder.client.basic.robot.setExtraConfigSpaceBounds(extraDof_bounds)
+
+rbprmBuilder.boundSO3([-math.pi,math.pi,-0.,0.,-0.,0.])
 rbprmBuilder.client.basic.robot.setDimensionExtraConfigSpace(extraDof)
-rbprmBuilder.client.basic.robot.setExtraConfigSpaceBounds([-1,1,-1,1,-2,2,0,0,0,0,0,0])
+extraDof_bounds = [-0.,0.,-0.,0.,-0.,0.,0.,0.,0.,0.,0.,0.]
+rbprmBuilder.client.basic.robot.setExtraConfigSpaceBounds(extraDof_bounds)
+
 indexECS = rbprmBuilder.getConfigSize() - rbprmBuilder.client.basic.robot.getDimensionExtraConfigSpace()
 
 # Creating an instance of HPP problem solver and the viewer
@@ -59,20 +70,22 @@ ps.client.problem.setParameter("vMax",vMax)
 ps.client.problem.setParameter("sizeFootX",omniORB.any.to_any(0.2))
 ps.client.problem.setParameter("sizeFootY",omniORB.any.to_any(0.12))
 ps.client.problem.setParameter("friction",mu)
+ps.client.problem.setParameter("orientedPath",omniORB.any.to_any(1.))#0.))
 r = Viewer (ps)
 
 from hpp.corbaserver.affordance.affordance import AffordanceTool
 afftool = AffordanceTool ()
-afftool.setAffordanceConfig('Support', [0.5, 0.03, 0.00005])
-afftool.loadObstacleModel (ENV_PACKAGE_NAME, ENV_NAME, ENV_PREFIX, r)
+afftool.setAffordanceConfig('Support', [0.5, 0.03, 0.05]) #0.00005])
+afftool.loadObstacleModel (ENV_PACKAGE_NAME, ENV_NAME, ENV_PREFIX, r, reduceSizes=[0.14,0.])
 #r.loadObstacleModel (packageName, "ground", "planning")
-#afftool.visualiseAffordances('Support', r, r.color.lightBrown)
+afftool.visualiseAffordances('Support', r, r.color.lightBrown)
 #r.addLandmark(r.sceneName,1)
 
 # Setting initial and goal configurations
 q_init = rbprmBuilder.getCurrentConfig ();
-q_init[3:7] = [1,0,0,0]
-q_init [0:3] = [0, 0, 1.]; r (q_init)
+q_init[3:7] = [1.,0.,0.,0.]
+q_init [0:3] = [1., 2.5, 0.8]; r (q_init)
+q_init[-6:-3] = [0.05, 0.,0.]
 
 """
 # test correspondance with fullBody : 
@@ -89,23 +102,49 @@ rbprmBuilder.setCurrentConfig (q_init)
 q_goal = q_init [::]
 
 
-q_goal[3:7] = [1,0,0,0]
-q_goal[0] = 1.5
+q_goal[3:7] = [1.,0.,0.,0.]
+q_goal[0:3] = [3.5, 0., 0.8]
+q_goal[-6:-3] = [0.,0.,0.]
 
-r (q_goal)
-#~ q_goal [0:3] = [-1.5, 0, 0.63]; r (q_goal)
+
+#MEMMO TEST WITH GRID
+import os
+if os.environ.get('TEST_NB')!=None:
+ memmo_test_number = int(os.environ.get('TEST_NB'))
+ import numpy as np
+ pi_index = memmo_test_number%10
+ vf_index = int(memmo_test_number/10)
+
+ pi = [np.cos(float(pi_index)/5.*math.pi),np.sin(float(pi_index)/5.*math.pi)]
+ vf = [0.05*np.cos((float(vf_index)/4.-3./4.)*math.pi+float(pi_index)/10.*2.*math.pi),0.05*np.sin((float(vf_index)/4.-3./4.)*math.pi+float(pi_index)/10.*2.*math.pi)]
+ 
+ q_init[0:2] = pi
+ q_init[-6:-4] = [0.05,0.0] #[vv[0].flat[memmo_test_number], vv[1].flat[memmo_test_number]]#vi[vi_index]
+ q_goal[0:2] = [0.,0.]#pf[pf_index]
+ q_goal[-6:-4] = vf
+ print " ---- MEMMO TEST ---- "
+ print "Parameters:"
+ print "-initial position: ", q_init[0:2]
+ print "-initial velocity: ", q_init[-6:-4]
+ print "-final position: ", q_goal[0:2]
+ print "-final velocity: ", q_goal[-6:-4]
 
 # Choosing a path optimizer
+print "\nInitial configuration: ", q_init
+print "Final configuration: ", q_goal
 ps.setInitialConfig (q_init)
 ps.addGoalConfig (q_goal)
 # Choosing RBPRM shooter and path validation methods.
 ps.client.problem.selectConFigurationShooter("RbprmShooter")
-ps.client.problem.selectPathValidation("RbprmDynamicPathValidation",0.05)
+#ps.client.problem.selectPathValidation("RbprmDynamicPathValidation",0.05)
+ps.client.problem.selectPathValidation("RbprmPathValidation",0.01)
 # Choosing kinodynamic methods :
 ps.selectSteeringMethod("RBPRMKinodynamic")
 ps.selectDistance("KinodynamicDistance")
 ps.selectPathPlanner("DynamicPlanner")
-ps.selectPathProjector('Progressive',0.05)
+#ps.selectPathProjector('Progressive',0.05)
+ps.addPathOptimizer("RandomShortcutDynamic")
+ps.addPathOptimizer("OrientedPathOptimizer")
 #solve the problem :
 r(q_init)
 
@@ -113,16 +152,18 @@ r(q_init)
 #r.solveAndDisplay("rm",1,0.01)
 tStart=time.time()
 
+print "START SOLVING ROOT PATH."
 t = ps.solve ()
+print "ROOT PATH SOLVED."
 
 tPlanning = time.time() -tStart
 
 from hpp.gepetto import PathPlayer
 pp = PathPlayer (rbprmBuilder.client.basic, r)
 pp.dt=0.03
-pp.displayVelocityPath(0)
-r.client.gui.setVisibility("path_0_root","ALWAYS_ON_TOP")
-
+pp.displayVelocityPath(pp.client.problem.numberPaths()-1)
+pp(pp.client.problem.numberPaths()-1)
+#r.client.gui.setVisibility("path_0_root","ALWAYS_ON_TOP")
 
 """
 if isinstance(t, list):

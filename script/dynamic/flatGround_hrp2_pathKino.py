@@ -85,8 +85,8 @@ rbprmBuilder.setCurrentConfig (q_init)
 q_goal = q_init [::]
 
 
-q_goal[3:7] = [1,0,0,0]
-q_goal [0:3] = [1, 0, 0.58]; r (q_goal)
+q_goal[3:7] = [0.707,0,0,0.707]
+q_goal [0:3] = [1, 0, 0.58];
 
 r (q_goal)
 #~ q_goal [0:3] = [-1.5, 0, 0.63]; r (q_goal)
@@ -103,13 +103,16 @@ ps.selectDistance("KinodynamicDistance")
 ps.selectPathPlanner("DynamicPlanner")
 ps.selectPathProjector('Progressive',0.05)
 #solve the problem :
-r(q_init)
+#r(q_init)
 
 
 #r.solveAndDisplay("rm",1,0.01)
 tStart=time.time()
 
 t = ps.solve ()
+
+import IPython
+IPython.embed()
 
 tPlanning = time.time() -tStart
 
