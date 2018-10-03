@@ -98,6 +98,7 @@ install(FILES
   data/urdf/darpa_no_ctc_mid.urdf
   data/urdf/car.urdf
   data/urdf/polaris.urdf
+  data/urdf/stair_bauzil_simplified.urdf
   data/urdf/siggraph_asia/chair.urdf
   data/urdf/siggraph_asia/down.urdf
   data/urdf/siggraph_asia/scale.urdf
@@ -281,6 +282,7 @@ install(FILES
 	data/meshes/bauzil_stairs.stl
 	data/meshes/bauzil_stairs_10cm.stl
 	data/meshes/bauzil_stairs_noRamp.stl
+        data/mesher/bauzil_stairs_noRamp_simplified.stl
 	data/meshes/bauzil_walk_stairs.stl
 	data/meshes/flat_step.stl
 	data/meshes/polaris.stl
